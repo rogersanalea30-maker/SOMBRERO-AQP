@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Facturación Electrónica SUNAT UBL 2.1</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <span class="bg-indigo-600 text-white p-2 rounded-lg text-lg">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </span>
+                    <div>
+                        <span class="font-bold text-lg tracking-wide text-white">FacturaLibre<span class="text-indigo-400">SUNAT</span></span>
+                        <span class="text-xs text-slate-400 block -mt-1">Emisión Directa UBL 2.1 (Sin OSE)</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="hidden md:flex space-x-2">
+                    <button onclick="switchTab('pos')" id="tab-btn-pos" class="nav-tab px-3 py-2 rounded-md text-sm font-medium bg-indigo-600 text-white transition flex items-center space-x-2">
+                        <i class="fa-solid fa-cash-register"></i>
+                        <span>Punto de Venta / Emisión</span>
+                    </button>
+                    <button onclick="switchTab('history')" id="tab-btn-history" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Historial Comprobantes</span>
+                    </button>
+                    <button onclick="switchTab('clients')" id="tab-btn-clients" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Clientes</span>
+                    </button>
+                    <button onclick="switchTab('products')" id="tab-btn-products" class="nav-tab px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:bg-slate-800 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Productos</span>
+                    </button>
+                </div>
+
+                <!-- SUNAT Status Badge & Swagger Link -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-emerald-950 text-emerald-400 border border-emerald-700/50 px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="env-badge">SUNAT BETA</span>
+                    </div>
+                    <a href="/docs" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-code"></i>
+                        <span>API Swagger</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+        <!-- =================================================================== -->
+        <!-- TAB 1: PUNTO DE VENTA / EMISIÓN RÁPIDA                              -->
+        <!-- =================================================================== -->
+        <section id="tab-pos" class="tab-content block">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Left Column: Formulario de Emisión (2/3 width) -->
+                <div class="lg:col-span-2 space-y-6">
+
+                    <!-- 1. Tipo de Documento y Serie -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center space-x-2">
+                            <i class="fa-solid fa-file-invoice text-indigo-600"></i>
+                            <span>1. Comprobante de Pago</span>
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo de Comprobante</label>
+                                <select id="doc-type" onchange="onDocTypeChange()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500">
+                                    <option value="01">Factura Electrónica (01)</option>
+                                    <option value="03">Boleta de Venta (03)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Serie</label>
+                                <input type="text" id="doc-series" value="F001" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg p-2.5 text-sm font-bold text-slate-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Forma de Pago</label>
+                                <select id="doc-payment" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500">
+                                    <option value="Contado">Contado</option>
+                                    <option value="Credito">Crédito</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Datos del Cliente / Receptor -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-user-check text-indigo-600"></i>
+                                <span>2. Datos del Cliente</span>
+                            </h2>
+                            <span class="text-xs text-slate-500">Autocompletado con consulta integrada</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo de Documento</label>
+                                <select id="client-type" onchange="onClientTypeChange()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm">
+                                    <option value="6">RUC (Registro Único de Contribuyentes)</option>
+                                    <option value="1">DNI (Documento Nacional de Identidad)</option>
+                                    <option value="4">Carnet de Extranjería</option>
+                                </select>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Número de Documento</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="client-num" placeholder="Ej: 20555555551" class="flex-1 bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 font-mono">
+                                    <button type="button" onclick="searchClientDoc()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        <span>Consultar</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Razón Social / Nombre Completo</label>
+                                <input type="text" id="client-name" placeholder="Ej: DISTRIBUIDORA LIMA S.A.C." class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Dirección Fiscal</label>
+                                <input type="text" id="client-address" placeholder="Ej: AV. AREQUIPA 1230 - LIMA" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Ítems del Comprobante -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                                <i class="fa-solid fa-list-check text-indigo-600"></i>
+                                <span>3. Detalle de Bienes y Servicios</span>
+                            </h2>
+                            <button type="button" onclick="addItemRow()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-1 transition">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Agregar Ítem</span>
+                            </button>
+                        </div>
+
+                        <!-- Items Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-slate-600 text-xs font-bold border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-2 px-2 w-12">Cant.</th>
+                                        <th class="py-2 px-2 w-20">Unidad</th>
+                                        <th class="py-2 px-2">Descripción</th>
+                                        <th class="py-2 px-2 w-28 text-right">V. Unit (S/)</th>
+                                        <th class="py-2 px-2 w-28 text-right">Total (S/)</th>
+                                        <th class="py-2 px-1 w-10 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="items-tbody" class="divide-y divide-slate-100">
+                                    <!-- Dynamic rows inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Totales y Botón de Emisión (1/3 width) -->
+                <div class="space-y-6">
+
+                    <!-- Card de Totales -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sticky top-24">
+                        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4 border-b pb-2">Resumen de Liquidación</h3>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between text-slate-600">
+                                <span>Operaciones Gravadas:</span>
+                                <span class="font-mono font-medium" id="sum-gravada">S/ 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600">
+                                <span>I.G.V. (18%):</span>
+                                <span class="font-mono font-medium" id="sum-igv">S/ 0.00</span>
+                            </div>
+                            <div class="border-t border-slate-200 pt-3 flex justify-between items-baseline">
+                                <span class="text-base font-bold text-slate-900">Importe Total:</span>
+                                <span class="text-2xl font-bold font-mono text-indigo-600" id="sum-total">S/ 0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600">
+                            <span class="font-bold block text-slate-700">Monto en letras:</span>
+                            <span id="sum-letras" class="italic">SON: CERO CON 00/100 SOLES</span>
+                        </div>
+
+                        <!-- Botón de Emisión -->
+                        <button type="button" id="btn-emit" onclick="emitirComprobanteDirecto()" class="w-full mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center space-x-2 text-base">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Emitir a SUNAT</span>
+                        </button>
+
+                        <div class="mt-3 text-center">
+                            <span class="text-[11px] text-slate-500 flex items-center justify-center space-x-1">
+                                <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                                <span>Firma digital XMLDSIG y envío directo a SUNAT</span>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 2: HISTORIAL DE COMPROBANTES                                    -->
+        <!-- =================================================================== -->
+        <section id="tab-history" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Comprobantes Electrónicos Emitidos</h2>
+                        <p class="text-xs text-slate-500">Historial completo con estado oficial de aceptación en SUNAT y descarga de CDR</p>
+                    </div>
+                    <button onclick="loadHistory()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>Actualizar</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-600 text-xs font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-3">Comprobante</th>
+                                <th class="py-3 px-3">Fecha</th>
+                                <th class="py-3 px-3">Cliente</th>
+                                <th class="py-3 px-3 text-right">Total (S/)</th>
+                                <th class="py-3 px-3 text-center">Estado SUNAT</th>
+                                <th class="py-3 px-3 text-center">Descargas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-slate-400">Cargando comprobantes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 3: CLIENTES                                                     -->
+        <!-- =================================================================== -->
+        <section id="tab-clients" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Directorio de Clientes</h2>
+                        <p class="text-xs text-slate-500">Gestión de contribuyentes y clientes registrados</p>
+                    </div>
+                    <button onclick="showNewClientModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Nuevo Cliente</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-600 text-xs font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-3">Documento</th>
+                                <th class="py-3 px-3">Razón Social / Nombre</th>
+                                <th class="py-3 px-3">Dirección</th>
+                                <th class="py-3 px-3">Email / Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clients-tbody" class="divide-y divide-slate-100">
+                            <!-- Clientes -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 4: PRODUCTOS                                                    -->
+        <!-- =================================================================== -->
+        <section id="tab-products" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Catálogo de Productos y Servicios</h2>
+                        <p class="text-xs text-slate-500">Bienes y servicios disponibles para facturación rápida</p>
+                    </div>
+                    <button onclick="showNewProductModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nuevo Producto</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-600 text-xs font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-3">Código</th>
+                                <th class="py-3 px-3">Descripción</th>
+                                <th class="py-3 px-3">Unidad</th>
+                                <th class="py-3 px-3 text-right">Valor Unit. (Sin IGV)</th>
+                                <th class="py-3 px-3 text-right">Precio Venta (Con IGV)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-tbody" class="divide-y divide-slate-100">
+                            <!-- Productos -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal de Resultado de Emisión -->
+    <div id="modal-result" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 text-center animate-in fade-in duration-200">
+            <div id="modal-icon-container" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center text-3xl mb-4">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 id="modal-title" class="text-xl font-bold text-slate-900 mb-1">¡Comprobante Emitido con Éxito!</h3>
+            <p id="modal-desc" class="text-sm text-slate-600 mb-4">La Factura F001-00000001 ha sido aceptada oficialmente por la SUNAT.</p>
+
+            <div class="bg-slate-50 rounded-xl p-3 mb-6 text-left border border-slate-200 text-xs space-y-1">
+                <div><span class="font-bold text-slate-700">Comprobante:</span> <span id="modal-doc-id" class="font-mono text-indigo-600 font-bold">F001-00000001</span></div>
+                <div><span class="font-bold text-slate-700">Código Hash:</span> <span id="modal-hash" class="font-mono text-slate-500 break-all">-</span></div>
+                <div><span class="font-bold text-slate-700">Respuesta SUNAT:</span> <span id="modal-cdr-status" class="text-emerald-600 font-semibold">0 - Aceptado</span></div>
+            </div>
+
+            <!-- Botones de descarga -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <a id="btn-pdf-a4" href="#" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>PDF A4</span>
+                </a>
+                <a id="btn-pdf-ticket" href="#" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Ticket 80mm</span>
+                </a>
+                <a id="btn-download-xml" href="#" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                    <i class="fa-solid fa-file-code"></i>
+                    <span>XML Firmado</span>
+                </a>
+                <a id="btn-download-cdr" href="#" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition">
+                    <i class="fa-solid fa-stamp"></i>
+                    <span>CDR SUNAT</span>
+                </a>
+            </div>
+
+            <button onclick="closeResultModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-2.5 rounded-lg text-sm transition">
+                Cerrar y Nueva Venta
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript del Frontend -->
+    <script>
+        let currentItems = [];
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fila inicial de producto
+            addItemRow("PROD-001", "DESARROLLO DE SOFTWARE MODULAR", 1, 100.00);
+            loadHistory();
+            loadClients();
+            loadProducts();
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('bg-indigo-600', 'text-white');
+                el.classList.add('text-slate-300');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            activeBtn.classList.add('bg-indigo-600', 'text-white');
+            activeBtn.classList.remove('text-slate-300');
+
+            if (tabId === 'history') loadHistory();
+            if (tabId === 'clients') loadClients();
+            if (tabId === 'products') loadProducts();
+        }
+
+        function onDocTypeChange() {
+            const docType = document.getElementById('doc-type').value;
+            const seriesInput = document.getElementById('doc-series');
+            const clientTypeSelect = document.getElementById('client-type');
+            
+            if (docType === "01") {
+                seriesInput.value = "F001";
+                clientTypeSelect.value = "6"; // Factura requiere RUC
+                document.getElementById('client-num').placeholder = "Ej: 20555555551";
+            } else {
+                seriesInput.value = "B001";
+                clientTypeSelect.value = "1"; // Boleta suele ser DNI
+                document.getElementById('client-num').placeholder = "Ej: 45678901";
+            }
+        }
+
+        function onClientTypeChange() {
+            const clientType = document.getElementById('client-type').value;
+            const clientNum = document.getElementById('client-num');
+            if (clientType === "6") clientNum.placeholder = "Ej: 20555555551 (11 dígitos)";
+            else if (clientType === "1") clientNum.placeholder = "Ej: 45678901 (8 dígitos)";
+        }
+
+        async function searchClientDoc() {
+            const tipo = document.getElementById('client-type').value;
+            const numero = document.getElementById('client-num').value.trim();
+            if (!numero) return alert("Por favor ingresa un número de documento.");
+
+            try {
+                const res = await fetch(`/api/v1/consultas/documento/${tipo}/${numero}`);
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('client-name').value = data.razon_social || "";
+                    if (data.direccion) document.getElementById('client-address').value = data.direccion;
+                } else {
+                    alert(data.mensaje || "Documento no encontrado");
+                }
+            } catch (err) {
+                console.error("Error buscando doc:", err);
+            }
+        }
+
+        function addItemRow(codigo = "", desc = "", cant = 1, precio = 50.00) {
+            const id = Date.now() + Math.random();
+            currentItems.push({ id, codigo, desc, cant, precio });
+            renderItemsTable();
+        }
+
+        function removeItemRow(id) {
+            currentItems = currentItems.filter(item => item.id !== id);
+            renderItemsTable();
+        }
+
+        function updateItem(id, field, value) {
+            const item = currentItems.find(i => i.id === id);
+            if (item) {
+                item[field] = (field === 'cant' || field === 'precio') ? parseFloat(value) || 0 : value;
+                renderItemsTable();
+            }
+        }
+
+        function renderItemsTable() {
+            const tbody = document.getElementById('items-tbody');
+            tbody.innerHTML = '';
+
+            let sumGravada = 0;
+
+            currentItems.forEach(item => {
+                const totalItem = (item.cant * item.precio) * 1.18;
+                sumGravada += (item.cant * item.precio);
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="py-2 px-2">
+                        <input type="number" min="1" step="1" value="${item.cant}" onchange="updateItem(${item.id}, 'cant', this.value)" class="w-14 bg-slate-50 border border-slate-300 rounded p-1 text-center font-bold text-xs">
+                    </td>
+                    <td class="py-2 px-2">
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">NIU</span>
+                    </td>
+                    <td class="py-2 px-2">
+                        <input type="text" value="${item.desc}" onchange="updateItem(${item.id}, 'desc', this.value)" placeholder="Descripción del producto" class="w-full bg-slate-50 border border-slate-300 rounded p-1 text-xs">
+                    </td>
+                    <td class="py-2 px-2 text-right">
+                        <input type="number" min="0" step="0.01" value="${item.precio.toFixed(2)}" onchange="updateItem(${item.id}, 'precio', this.value)" class="w-20 bg-slate-50 border border-slate-300 rounded p-1 text-right text-xs font-mono">
+                    </td>
+                    <td class="py-2 px-2 text-right font-mono font-bold text-xs text-slate-700">
+                        ${totalItem.toFixed(2)}
+                    </td>
+                    <td class="py-2 px-1 text-center">
+                        <button onclick="removeItemRow(${item.id})" class="text-rose-500 hover:text-rose-700 p-1 text-xs">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Actualizar resumen
+            const igv = sumGravada * 0.18;
+            const total = sumGravada + igv;
+
+            document.getElementById('sum-gravada').innerText = `S/ ${sumGravada.toFixed(2)}`;
+            document.getElementById('sum-igv').innerText = `S/ ${igv.toFixed(2)}`;
+            document.getElementById('sum-total').innerText = `S/ ${total.toFixed(2)}`;
+        }
+
+        async function emitirComprobanteDirecto() {
+            const btn = document.getElementById('btn-emit');
+            const docType = document.getElementById('doc-type').value;
+            const serie = document.getElementById('doc-series').value;
+            const clientType = document.getElementById('client-type').value;
+            const clientNum = document.getElementById('client-num').value.trim();
+            const clientName = document.getElementById('client-name').value.trim();
+            const clientAddress = document.getElementById('client-address').value.trim();
+
+            if (!clientNum || !clientName) {
+                return alert("Por favor complete el documento y nombre del cliente.");
+            }
+            if (currentItems.length === 0) {
+                return alert("Debe agregar al menos un ítem al comprobante.");
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Firmando y enviando a SUNAT...</span>`;
+
+            // Construir payload
+            const payload = {
+                tipo_documento: docType,
+                serie: serie,
+                correlativo: Math.floor(10000 + Math.random() * 90000), // Correlativo automático aleatorio para demo
+                moneda: "PEN",
+                forma_pago: document.getElementById('doc-payment').value,
+                cliente: {
+                    tipo_doc: clientType,
+                    num_doc: clientNum,
+                    razon_social: clientName,
+                    direccion: clientAddress || undefined
+                },
+                items: currentItems.map(i => ({
+                    codigo: i.codigo || "PROD",
+                    descripcion: i.desc,
+                    unidad_medida: "NIU",
+                    cantidad: i.cant,
+                    valor_unitario: i.precio,
+                    porcentaje_igv: 18.00,
+                    tipo_afectacion_igv: "10"
+                }))
+            };
+
+            try {
+                const response = await fetch('/api/v1/invoices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>Emitir a SUNAT</span>`;
+
+                if (response.ok && data.success) {
+                    showResultModal(data);
+                } else {
+                    alert(`Error de emisión: ${data.detail || data.message || 'Error en validación SUNAT'}`);
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>Emitir a SUNAT</span>`;
+                alert("Error de conexión con el servidor.");
+            }
+        }
+
+        function showResultModal(data) {
+            document.getElementById('modal-doc-id').innerText = data.document_id;
+            document.getElementById('modal-hash').innerText = data.hash_cpe;
+            document.getElementById('modal-desc').innerText = data.cdr?.description || "Aceptado exitosamente.";
+            
+            document.getElementById('btn-pdf-a4').href = `/api/v1/invoices/${data.document_id}/pdf?format=a4&tipo=${data.tipo_documento}`;
+            document.getElementById('btn-pdf-ticket').href = `/api/v1/invoices/${data.document_id}/pdf?format=ticket&tipo=${data.tipo_documento}`;
+            document.getElementById('btn-download-xml').href = `/api/v1/invoices/${data.document_id}/download/signed-xml?tipo=${data.tipo_documento}`;
+            document.getElementById('btn-download-cdr').href = `/api/v1/invoices/${data.document_id}/download/cdr-zip?tipo=${data.tipo_documento}`;
+
+            document.getElementById('modal-result').classList.remove('hidden');
+        }
+
+        function closeResultModal() {
+            document.getElementById('modal-result').classList.add('hidden');
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/v1/invoices/history');
+                const list = await res.json();
+                const tbody = document.getElementById('history-tbody');
+                tbody.innerHTML = '';
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">No hay comprobantes registrados aún.</td></tr>`;
+                    return;
+                }
+
+                list.forEach(inv => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                    tr.innerHTML = `
+                        <td class="py-3 px-3 font-mono font-bold text-indigo-600">${inv.document_id}</td>
+                        <td class="py-3 px-3 text-slate-500 text-xs">${inv.fecha_emision}</td>
+                        <td class="py-3 px-3">
+                            <div class="font-medium text-slate-800 text-xs">${inv.cliente_razon_social}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">${inv.cliente_num_doc}</div>
+                        </td>
+                        <td class="py-3 px-3 text-right font-mono font-bold text-slate-800 text-xs">S/ ${parseFloat(inv.total_pagar).toFixed(2)}</td>
+                        <td class="py-3 px-3 text-center">
+                            <span class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px]">
+                                <i class="fa-solid fa-circle-check"></i> ${inv.sunat_status}
+                            </span>
+                        </td>
+                        <td class="py-3 px-3 text-center space-x-1">
+                            <a href="/api/v1/invoices/${inv.document_id}/pdf?format=a4&tipo=${inv.tipo_documento}" target="_blank" title="PDF A4" class="text-indigo-600 hover:text-indigo-800 p-1"><i class="fa-solid fa-file-pdf"></i></a>
+                            <a href="/api/v1/invoices/${inv.document_id}/pdf?format=ticket&tipo=${inv.tipo_documento}" target="_blank" title="Ticket 80mm" class="text-slate-700 hover:text-slate-900 p-1"><i class="fa-solid fa-receipt"></i></a>
+                            <a href="/api/v1/invoices/${inv.document_id}/download/signed-xml?tipo=${inv.tipo_documento}" target="_blank" title="XML" class="text-emerald-600 hover:text-emerald-800 p-1"><i class="fa-solid fa-file-code"></i></a>
+                            <a href="/api/v1/invoices/${inv.document_id}/download/cdr-zip?tipo=${inv.tipo_documento}" target="_blank" title="CDR" class="text-amber-600 hover:text-amber-800 p-1"><i class="fa-solid fa-stamp"></i></a>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Error loading history:", err);
+            }
+        }
+
+        async function loadClients() {
+            try {
+                const res = await fetch('/api/v1/clients');
+                const list = await res.json();
+                const tbody = document.getElementById('clients-tbody');
+                tbody.innerHTML = '';
+                list.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                    tr.innerHTML = `
+                        <td class="py-3 px-3 font-mono font-bold text-slate-700 text-xs">${c.num_doc}</td>
+                        <td class="py-3 px-3 font-medium text-slate-800 text-xs">${c.razon_social}</td>
+                        <td class="py-3 px-3 text-slate-500 text-xs">${c.direccion || '-'}</td>
+                        <td class="py-3 px-3 text-slate-400 text-xs">${c.email || c.telefono || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch('/api/v1/products');
+                const list = await res.json();
+                const tbody = document.getElementById('products-tbody');
+                tbody.innerHTML = '';
+                list.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                    tr.innerHTML = `
+                        <td class="py-3 px-3 font-mono text-xs font-bold text-slate-600">${p.codigo}</td>
+                        <td class="py-3 px-3 font-medium text-slate-800 text-xs">${p.descripcion}</td>
+                        <td class="py-3 px-3 text-slate-500 text-xs">${p.unidad_medida}</td>
+                        <td class="py-3 px-3 text-right font-mono text-xs text-slate-700">S/ ${parseFloat(p.valor_unitario).toFixed(2)}</td>
+                        <td class="py-3 px-3 text-right font-mono font-bold text-indigo-600 text-xs">S/ ${parseFloat(p.precio_unitario).toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {}
+        }
+    </script>
+</body>
+</html>

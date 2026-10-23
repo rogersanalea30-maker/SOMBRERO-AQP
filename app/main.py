@@ -1,15 +1,20 @@
 """
-Punto de Entrada Principal de la API de Facturación Electrónica SUNAT (FastAPI)
-Permite emitir Facturas (01) y Boletas de Venta (03) conectándose directamente a SUNAT.
+Punto de Entrada Principal de la API y Plataforma de Facturación Electrónica SUNAT
+FastAPI + Base de Datos SQLite/PostgreSQL + Generación de PDFs + UI Dashboard
 """
 
 import os
-from typing import Literal
-from fastapi import FastAPI, HTTPException, status
+from decimal import Decimal
+from typing import Literal, List, Optional
+from fastapi import FastAPI, HTTPException, Depends, status, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import Session
 
 from app.config import settings
+from app.db import Base, engine, get_db
+from app.db.models import ClientModel, ProductModel, InvoiceSeriesModel, InvoiceModel, InvoiceItemModel
 from app.schemas.invoice import InvoiceRequest
 from app.schemas.response import (
     InvoiceResponse,
@@ -20,20 +25,26 @@ from app.schemas.response import (
 from app.services.xml_builder import UBL21InvoiceBuilder
 from app.services.signer import XmlSignerSUNAT
 from app.services.sunat_client import SunatSoapClient
+from app.services.pdf_generator import PDFGeneratorSUNAT
+from app.services.consulta_doc import consultar_documento_peru
+from app.services.credit_note_builder import UBL21CreditNoteBuilder
 
 
+# 1. Crear tablas en la base de datos automáticamente
+Base.metadata.create_all(bind=engine)
+
+# 2. Inicializar FastAPI
 app = FastAPI(
-    title="Sistema de Facturación Electrónica SUNAT (UBL 2.1)",
+    title="Plataforma de Facturación Electrónica SUNAT (UBL 2.1)",
     description=(
-        "Backend modular y gratuito en Python + FastAPI para emisión directa de "
-        "Facturas (01) y Boletas de Venta (03) ante los Web Services de la SUNAT (sin OSEs ni intermediarios)."
+        "Sistema integral open source para emisión de Facturas (01), Boletas (03) y Notas de Crédito (07) "
+        "con conexión directa a la SUNAT, generación de PDFs con Código QR y panel de control web."
     ),
-    version="1.0.0",
+    version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
-# Habilitar CORS para permitir conexión desde cualquier frontend web o móvil
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -42,21 +53,78 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 3. Montar archivos estáticos para la interfaz de usuario
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-@app.get("/", tags=["General"])
-def read_root():
-    """Ruta raíz de bienvenida e información del servicio."""
-    return {
-        "sistema": "Facturación Electrónica SUNAT UBL 2.1",
-        "estado": "Operativo",
-        "entorno": settings.SUNAT_ENV,
-        "emisor_configurado": {
-            "ruc": settings.EMISOR_RUC,
-            "razon_social": settings.EMISOR_RAZON_SOCIAL,
-            "usuario_secundario": settings.sunat_auth_username
-        },
-        "documentacion": "/docs"
-    }
+
+# 4. Datos iniciales de demostración (Seed)
+@app.on_event("startup")
+def startup_db_seed():
+    db = next(get_db())
+    try:
+        if db.query(ProductModel).count() == 0:
+            p1 = ProductModel(
+                codigo="PROD-001",
+                descripcion="DESARROLLO DE SOFTWARE MODULAR",
+                unidad_medida="ZZ",
+                valor_unitario=Decimal("100.00"),
+                precio_unitario=Decimal("118.00"),
+                tipo_afectacion="10"
+            )
+            p2 = ProductModel(
+                codigo="PROD-002",
+                descripcion="LICENCIA DE FACTURACIÓN ELECTRÓNICA UBL 2.1",
+                unidad_medida="NIU",
+                valor_unitario=Decimal("50.00"),
+                precio_unitario=Decimal("59.00"),
+                tipo_afectacion="10"
+            )
+            p3 = ProductModel(
+                codigo="PROD-003",
+                descripcion="CONSULTORÍA Y SOPORTE MENSUAL",
+                unidad_medida="ZZ",
+                valor_unitario=Decimal("200.00"),
+                precio_unitario=Decimal("236.00"),
+                tipo_afectacion="10"
+            )
+            db.add_all([p1, p2, p3])
+            db.commit()
+
+        if db.query(ClientModel).count() == 0:
+            c1 = ClientModel(
+                tipo_doc="6",
+                num_doc="20555555551",
+                razon_social="DISTRIBUIDORA LIMA S.A.C.",
+                direccion="AV. AREQUIPA 1230 - LIMA",
+                email="contacto@distribuidoralima.pe"
+            )
+            c2 = ClientModel(
+                tipo_doc="1",
+                num_doc="45678901",
+                razon_social="MARIO VARGAS LLOSA",
+                direccion="AV. PARDO 450 - MIRAFLORES",
+                email="mario@correo.pe"
+            )
+            db.add_all([c1, c2])
+            db.commit()
+    finally:
+        db.close()
+
+
+# ==============================================================================
+# RUTAS DE INTERFAZ Y GENERALES
+# ==============================================================================
+
+@app.get("/", response_class=HTMLResponse, tags=["Interfaz Web"])
+def serve_dashboard():
+    """Servicio de la interfaz gráfica interactiva de Punto de Venta y Gestión."""
+    index_file = os.path.join(static_dir, "index.html")
+    if os.path.exists(index_file):
+        with open(index_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse("<h1>Facturación Electrónica SUNAT - API Operativa</h1><p>Visite <a href='/docs'>/docs</a></p>")
 
 
 @app.get("/health", tags=["General"])
@@ -72,48 +140,49 @@ def health_check():
     }
 
 
+# ==============================================================================
+# EMISIÓN DE FACTURAS Y BOLETAS
+# ==============================================================================
+
 @app.post(
     "/api/v1/invoices",
     response_model=InvoiceResponse,
     status_code=status.HTTP_201_CREATED,
     tags=["Comprobantes"]
 )
-def emitir_comprobante(invoice_data: InvoiceRequest):
+def emitir_comprobante(invoice_data: InvoiceRequest, db: Session = Depends(get_db)):
     """
-    Emite una Factura (01) o Boleta de Venta (03):
-    1. Valida el payload según catálogos de SUNAT.
-    2. Construye el XML UBL 2.1.
-    3. Firma digitalmente el XML usando el certificado .pfx.
-    4. Empaqueta el XML firmado en un archivo ZIP.
-    5. Envía el comprobante directamente a SUNAT vía Web Service SOAP (sendBill).
-    6. Procesa la Constancia de Recepción (CDR) y retorna el estado de aprobación.
+    Emite una Factura (01) o Boleta (03) conectándose directamente con la SUNAT:
+    1. Construye el XML UBL 2.1.
+    2. Firma digitalmente con el certificado .pfx.
+    3. Empaqueta el ZIP y lo envía mediante sendBill.
+    4. Procesa y almacena el CDR de respuesta.
+    5. Genera la Representación Impresa en PDF (A4 y Ticket 80mm).
+    6. Persiste la venta y los comprobantes en la base de datos.
     """
     try:
-        # 1. Resolver emisor y nombres de archivo
         emisor_ruc = invoice_data.emisor.ruc if invoice_data.emisor else settings.EMISOR_RUC
         doc_id = invoice_data.id_comprobante
         tipo_doc = invoice_data.tipo_documento.value
         base_name = f"{emisor_ruc}-{tipo_doc}-{invoice_data.serie}-{invoice_data.correlativo_str}"
 
-        # 2. Construir XML UBL 2.1
+        # 1. Construir XML UBL 2.1
         builder = UBL21InvoiceBuilder(invoice_data)
         xml_element, unsigned_xml_bytes = builder.build_xml()
 
-        # Guardar XML sin firmar
         unsigned_xml_path = os.path.join(settings.dir_xml, f"{base_name}-unsigned.xml")
         with open(unsigned_xml_path, "wb") as f:
             f.write(unsigned_xml_bytes)
 
-        # 3. Firmar digitalmente con Certificado .pfx
+        # 2. Firmar digitalmente
         signer = XmlSignerSUNAT()
         signed_xml_bytes, hash_cpe = signer.sign_xml(xml_element)
 
-        # Guardar XML firmado oficial
         signed_xml_path = os.path.join(settings.dir_xml, f"{base_name}.xml")
         with open(signed_xml_path, "wb") as f:
             f.write(signed_xml_bytes)
 
-        # 4. Enviar a SUNAT mediante Zeep SOAP BillService
+        # 3. Enviar a SUNAT (sendBill)
         soap_client = SunatSoapClient()
         sunat_result = soap_client.send_bill(
             ruc_emisor=emisor_ruc,
@@ -124,6 +193,80 @@ def emitir_comprobante(invoice_data: InvoiceRequest):
         )
 
         cdr: CdrDetails = sunat_result["cdr"]
+
+        # 4. Generar PDFs (A4 y Ticket 80mm) con Código QR oficial y Hash
+        pdf_dict = invoice_data.model_dump(mode="json")
+        pdf_dict["hash_cpe"] = hash_cpe
+        pdf_a4_path = os.path.join(settings.dir_pdf, f"{base_name}-a4.pdf")
+        pdf_ticket_path = os.path.join(settings.dir_pdf, f"{base_name}-ticket.pdf")
+
+        PDFGeneratorSUNAT.generar_pdf_a4(pdf_dict, pdf_a4_path)
+        PDFGeneratorSUNAT.generar_pdf_ticket_80mm(pdf_dict, pdf_ticket_path)
+
+        # 5. Persistir en Base de Datos
+        try:
+            # Guardar o actualizar cliente si no existe
+            client_record = db.query(ClientModel).filter(ClientModel.num_doc == invoice_data.cliente.num_doc).first()
+            if not client_record:
+                client_record = ClientModel(
+                    tipo_doc=invoice_data.cliente.tipo_doc.value,
+                    num_doc=invoice_data.cliente.num_doc,
+                    razon_social=invoice_data.cliente.razon_social,
+                    direccion=invoice_data.cliente.direccion
+                )
+                db.add(client_record)
+
+            # Registrar factura
+            inv_db = InvoiceModel(
+                tipo_documento=tipo_doc,
+                serie=invoice_data.serie,
+                correlativo=invoice_data.correlativo,
+                document_id=doc_id,
+                fecha_emision=invoice_data.fecha_emision,
+                moneda=invoice_data.moneda.value,
+                forma_pago=invoice_data.forma_pago.value,
+                total_gravado=builder.total_gravado,
+                total_exonerado=builder.total_exonerado,
+                total_inafecto=builder.total_inafecto,
+                total_igv=builder.total_igv,
+                total_pagar=builder.total_a_pagar,
+                hash_cpe=hash_cpe,
+                sunat_status="ACEPTADO" if cdr.accepted else "RECHAZADO",
+                sunat_code=cdr.response_code,
+                sunat_description=cdr.description,
+                cliente_tipo_doc=invoice_data.cliente.tipo_doc.value,
+                cliente_num_doc=invoice_data.cliente.num_doc,
+                cliente_razon_social=invoice_data.cliente.razon_social,
+                cliente_direccion=invoice_data.cliente.direccion,
+                xml_path=signed_xml_path,
+                zip_path=sunat_result["zip_path"],
+                cdr_path=sunat_result["cdr_xml_path"],
+                pdf_a4_path=pdf_a4_path,
+                pdf_ticket_path=pdf_ticket_path
+            )
+            db.add(inv_db)
+            db.flush()
+
+            for item in invoice_data.items:
+                v_venta = item.cantidad * item.valor_unitario
+                igv_line = v_venta * (item.porcentaje_igv / Decimal("100"))
+                db_item = InvoiceItemModel(
+                    invoice_id=inv_db.id,
+                    codigo=item.codigo,
+                    descripcion=item.descripcion,
+                    unidad_medida=item.unidad_medida,
+                    cantidad=item.cantidad,
+                    valor_unitario=item.valor_unitario,
+                    precio_unitario=item.precio_unitario or (item.valor_unitario * Decimal("1.18")),
+                    igv_linea=igv_line,
+                    valor_venta=v_venta
+                )
+                db.add(db_item)
+
+            db.commit()
+        except Exception as db_err:
+            db.rollback()
+            print(f"[WARN] No se pudo guardar en BD: {db_err}")
 
         file_refs = FileReferences(
             xml=unsigned_xml_path,
@@ -154,76 +297,49 @@ def emitir_comprobante(invoice_data: InvoiceRequest):
     except RuntimeError as run_err:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(run_err))
     except Exception as ex:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error interno no controlado durante la emisión: {ex}"
-        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error interno: {ex}")
 
 
-@app.post(
-    "/api/v1/invoices/preview-xml",
-    response_model=PreviewXmlResponse,
-    tags=["Comprobantes"]
-)
-def previsualizar_xml_firmado(invoice_data: InvoiceRequest):
-    """
-    Genera y firma el XML UBL 2.1 sin enviarlo a la SUNAT.
-    Útil para auditorías, inspección de etiquetas y pruebas de firmado offline.
-    """
-    try:
-        emisor_ruc = invoice_data.emisor.ruc if invoice_data.emisor else settings.EMISOR_RUC
-        doc_id = invoice_data.id_comprobante
-        tipo_doc = invoice_data.tipo_documento.value
-        base_name = f"{emisor_ruc}-{tipo_doc}-{invoice_data.serie}-{invoice_data.correlativo_str}"
+# ==============================================================================
+# CONSULTA Y DESCARGA DE ARCHIVOS (PDF, XML, CDR)
+# ==============================================================================
 
-        builder = UBL21InvoiceBuilder(invoice_data)
-        xml_element, _ = builder.build_xml()
+@app.get("/api/v1/invoices/{document_id}/pdf", tags=["Archivos"])
+def ver_pdf_comprobante(
+    document_id: str,
+    format: Literal["a4", "ticket"] = Query("a4", description="Formato del PDF: 'a4' o 'ticket'"),
+    tipo: str = "01",
+    emisor_ruc: str = settings.EMISOR_RUC
+):
+    """Genera o entrega el archivo PDF del comprobante en formato A4 o Ticket 80mm."""
+    parts = document_id.split("-")
+    if len(parts) != 2:
+        raise HTTPException(status_code=400, detail="Formato inválido. Use SERIE-CORRELATIVO")
+    serie, correlativo = parts[0], parts[1].zfill(8)
+    base_name = f"{emisor_ruc}-{tipo}-{serie}-{correlativo}"
 
-        signer = XmlSignerSUNAT()
-        signed_xml_bytes, hash_cpe = signer.sign_xml(xml_element)
+    filename = f"{base_name}-a4.pdf" if format == "a4" else f"{base_name}-ticket.pdf"
+    file_path = os.path.join(settings.dir_pdf, filename)
 
-        signed_xml_path = os.path.join(settings.dir_xml, f"{base_name}.xml")
-        with open(signed_xml_path, "wb") as f:
-            f.write(signed_xml_bytes)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="El PDF solicitado no existe o no fue generado.")
 
-        return PreviewXmlResponse(
-            success=True,
-            document_id=doc_id,
-            tipo_documento=tipo_doc,
-            hash_cpe=hash_cpe,
-            xml_content=signed_xml_bytes.decode("utf-8"),
-            signed_xml_path=signed_xml_path
-        )
-    except Exception as ex:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ex))
+    return FileResponse(path=file_path, filename=filename, media_type="application/pdf")
 
 
-@app.get(
-    "/api/v1/invoices/{document_id}/download/{file_type}",
-    tags=["Archivos"]
-)
+@app.get("/api/v1/invoices/{document_id}/download/{file_type}", tags=["Archivos"])
 def descargar_archivo_comprobante(
     document_id: str,
     file_type: Literal["xml", "signed-xml", "zip", "cdr-zip", "cdr-xml"],
     emisor_ruc: str = settings.EMISOR_RUC,
-    tipo_documento: str = "01"
+    tipo: str = "01"
 ):
-    """
-    Descarga archivos generados asociados a un comprobante:
-    - xml: XML original sin firmar
-    - signed-xml: XML firmado digitalmente
-    - zip: Archivo ZIP enviado a SUNAT
-    - cdr-zip: Archivo ZIP de respuesta recibido de SUNAT
-    - cdr-xml: Archivo XML extraído del CDR
-    """
+    """Descarga XML original, firmado, ZIP o CDR."""
     parts = document_id.split("-")
     if len(parts) != 2:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El document_id debe tener el formato SERIE-CORRELATIVO (ej. F001-00000001)"
-        )
+        raise HTTPException(status_code=400, detail="Formato inválido")
     serie, correlativo = parts[0], parts[1].zfill(8)
-    base_name = f"{emisor_ruc}-{tipo_documento}-{serie}-{correlativo}"
+    base_name = f"{emisor_ruc}-{tipo}-{serie}-{correlativo}"
 
     mapping = {
         "xml": (settings.dir_xml, f"{base_name}-unsigned.xml", "application/xml"),
@@ -237,44 +353,71 @@ def descargar_archivo_comprobante(
     file_path = os.path.join(folder, filename)
 
     if not os.path.exists(file_path):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No se encontró el archivo solicitado: {filename}"
-        )
+        raise HTTPException(status_code=404, detail=f"No se encontró el archivo: {filename}")
 
     return FileResponse(path=file_path, filename=filename, media_type=media_type)
 
 
-@app.get(
-    "/api/v1/invoices/{document_id}/cdr",
-    response_model=CdrDetails,
-    tags=["Comprobantes"]
-)
-def consultar_cdr_almacenado(
-    document_id: str,
-    emisor_ruc: str = settings.EMISOR_RUC,
-    tipo_documento: str = "01"
-):
-    """Lee y parsea la Constancia de Recepción (CDR) previamente almacenada en disco."""
-    parts = document_id.split("-")
-    if len(parts) != 2:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Formato inválido. Use SERIE-CORRELATIVO (ej. F001-00000001)"
-        )
-    serie, correlativo = parts[0], parts[1].zfill(8)
-    cdr_xml_file = os.path.join(settings.dir_cdr, f"R-{emisor_ruc}-{tipo_documento}-{serie}-{correlativo}.xml")
+@app.get("/api/v1/invoices/history", tags=["Comprobantes"])
+def listar_historial_comprobantes(db: Session = Depends(get_db)):
+    """Retorna la lista de comprobantes registrados en la base de datos."""
+    return db.query(InvoiceModel).order_by(InvoiceModel.id.desc()).limit(50).all()
 
-    if not os.path.exists(cdr_xml_file):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No existe CDR registrado para el comprobante {document_id}"
-        )
 
-    with open(cdr_xml_file, "rb") as f:
-        cdr_bytes = f.read()
+# ==============================================================================
+# CONSULTA RUC / DNI
+# ==============================================================================
 
-    return SunatSoapClient._parse_cdr_xml(cdr_bytes)
+@app.get("/api/v1/consultas/documento/{tipo}/{numero}", tags=["Consultas"])
+def api_consultar_documento(tipo: str, numero: str):
+    """Consulta pública o validación de RUC (11 dígitos) o DNI (8 dígitos)."""
+    return consultar_documento_peru(tipo, numero)
+
+
+# ==============================================================================
+# CATÁLOGO DE CLIENTES Y PRODUCTOS
+# ==============================================================================
+
+@app.get("/api/v1/clients", tags=["Clientes"])
+def listar_clientes(db: Session = Depends(get_db)):
+    return db.query(ClientModel).order_by(ClientModel.id.desc()).all()
+
+
+@app.get("/api/v1/products", tags=["Productos"])
+def listar_productos(db: Session = Depends(get_db)):
+    return db.query(ProductModel).order_by(ProductModel.id.asc()).all()
+
+
+# ==============================================================================
+# PREVIEW OFFLINE
+# ==============================================================================
+
+@app.post("/api/v1/invoices/preview-xml", response_model=PreviewXmlResponse, tags=["Comprobantes"])
+def previsualizar_xml_firmado(invoice_data: InvoiceRequest):
+    """Genera y firma el XML UBL 2.1 sin enviarlo a SUNAT."""
+    emisor_ruc = invoice_data.emisor.ruc if invoice_data.emisor else settings.EMISOR_RUC
+    doc_id = invoice_data.id_comprobante
+    tipo_doc = invoice_data.tipo_documento.value
+    base_name = f"{emisor_ruc}-{tipo_doc}-{invoice_data.serie}-{invoice_data.correlativo_str}"
+
+    builder = UBL21InvoiceBuilder(invoice_data)
+    xml_element, _ = builder.build_xml()
+
+    signer = XmlSignerSUNAT()
+    signed_xml_bytes, hash_cpe = signer.sign_xml(xml_element)
+
+    signed_xml_path = os.path.join(settings.dir_xml, f"{base_name}.xml")
+    with open(signed_xml_path, "wb") as f:
+        f.write(signed_xml_bytes)
+
+    return PreviewXmlResponse(
+        success=True,
+        document_id=doc_id,
+        tipo_documento=tipo_doc,
+        hash_cpe=hash_cpe,
+        xml_content=signed_xml_bytes.decode("utf-8"),
+        signed_xml_path=signed_xml_path
+    )
 
 
 if __name__ == "__main__":

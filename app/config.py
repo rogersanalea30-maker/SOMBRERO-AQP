@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     # Rutas de almacenamiento
     STORAGE_DIR: str = "app/storage"
 
+    # Base de Datos SQLite por defecto (o PostgreSQL mediante DATABASE_URL)
+    DATABASE_URL: str = "sqlite:///./app/storage/facturacion.db"
+
     # Parámetros del servidor
     DEBUG: bool = True
     PORT: int = 8000
@@ -78,6 +81,12 @@ class Settings(BaseSettings):
     @property
     def dir_cdr(self) -> str:
         path = os.path.join(self.STORAGE_DIR, "cdr")
+        os.makedirs(path, exist_ok=True)
+        return path
+
+    @property
+    def dir_pdf(self) -> str:
+        path = os.path.join(self.STORAGE_DIR, "pdf")
         os.makedirs(path, exist_ok=True)
         return path
 

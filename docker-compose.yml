@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  facturacion-sunat:
+    build: .
+    container_name: facturacion_sunat_app
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - SUNAT_ENV=BETA
+      - SUNAT_USER=MODDATOS
+      - SUNAT_PASSWORD=moddatos
+      - EMISOR_RUC=20000000001
+      - EMISOR_RAZON_SOCIAL=EMPRESA DE PRUEBA S.A.C.
+      - CERT_PATH=app/certificates/certificate.pfx
+      - CERT_PASSWORD=123456
+    volumes:
+      # Persistencia de almacenamiento de XMLs, ZIPs, CDRs, PDFs y certificados
+      - ./app/storage:/app/app/storage
+      - ./app/certificates:/app/app/certificates
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
