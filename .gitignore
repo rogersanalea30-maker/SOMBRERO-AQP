@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Archivos de entorno y certificados privados
+.env
+app/certificates/*.pfx
+app/certificates/*.p12
+app/certificates/*.key
+app/certificates/*.pem
+test_cert.pfx
+
+# Almacenamiento generado
+app/storage/xml/*
+!app/storage/xml/.gitkeep
+app/storage/zip/*
+!app/storage/zip/.gitkeep
+app/storage/cdr/*
+!app/storage/cdr/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
