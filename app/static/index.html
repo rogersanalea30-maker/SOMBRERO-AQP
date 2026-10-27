@@ -50,6 +50,10 @@
 
                 <!-- SUNAT Status Badge & Swagger Link -->
                 <div class="flex items-center space-x-3">
+                    <button onclick="triggerArcaSync()" id="btn-sync-arca" class="bg-indigo-700 hover:bg-indigo-800 text-white border border-indigo-500/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition shadow">
+                        <i class="fa-solid fa-arrows-rotate" id="icon-sync"></i>
+                        <span id="text-sync">Sincronizar Arca</span>
+                    </button>
                     <div class="bg-emerald-950 text-emerald-400 border border-emerald-700/50 px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span id="env-badge">SUNAT BETA</span>
@@ -151,10 +155,15 @@
                                 <i class="fa-solid fa-list-check text-indigo-600"></i>
                                 <span>3. Detalle de Bienes y Servicios</span>
                             </h2>
-                            <button type="button" onclick="addItemRow()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-1 transition">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Agregar Ítem</span>
-                            </button>
+                            <div class="flex items-center space-x-2">
+                                <select id="quick-prod-select" onchange="addSelectedProduct()" class="bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-xs font-medium text-slate-700 max-w-xs">
+                                    <option value="">⚡ Seleccionar del catálogo...</option>
+                                </select>
+                                <button type="button" onclick="addItemRow()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-1 transition">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>Agregar Manual</span>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Items Table -->
@@ -376,6 +385,7 @@
     <!-- JavaScript del Frontend -->
     <script>
         let currentItems = [];
+        let catalogProducts = [];
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
@@ -385,6 +395,57 @@
             loadClients();
             loadProducts();
         });
+
+        async function triggerArcaSync() {
+            const btn = document.getElementById('btn-sync-arca');
+            const icon = document.getElementById('icon-sync');
+            const text = document.getElementById('text-sync');
+
+            btn.disabled = true;
+            icon.classList.add('fa-spin');
+            text.innerText = "Sincronizando...";
+
+            try {
+                const res = await fetch('/api/v1/arca/sync', { method: 'POST' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert(`¡Sincronización Exitosa con Arca Digital!\n\nProductos sincronizados: ${data.detalles.products_imported}\nClientes sincronizados: ${data.detalles.clients_imported}`);
+                    loadProducts();
+                    loadClients();
+                } else {
+                    alert(`Error en sincronización: ${data.detail || 'Fallo de conexión'}`);
+                }
+            } catch (err) {
+                alert("Error de comunicación con el servidor local.");
+            } finally {
+                btn.disabled = false;
+                icon.classList.remove('fa-spin');
+                text.innerText = "Sincronizar Arca";
+            }
+        }
+
+        function populateQuickProducts(products) {
+            const select = document.getElementById('quick-prod-select');
+            select.innerHTML = '<option value="">⚡ Seleccionar del catálogo...</option>';
+            catalogProducts = products;
+            products.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.codigo;
+                opt.innerText = `${p.descripcion} (S/ ${parseFloat(p.precio_unitario).toFixed(2)})`;
+                select.appendChild(opt);
+            });
+        }
+
+        function addSelectedProduct() {
+            const select = document.getElementById('quick-prod-select');
+            const code = select.value;
+            if (!code) return;
+            const p = catalogProducts.find(item => item.codigo === code);
+            if (p) {
+                addItemRow(p.codigo, p.descripcion, 1, parseFloat(p.valor_unitario));
+            }
+            select.value = "";
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -658,6 +719,7 @@
             try {
                 const res = await fetch('/api/v1/products');
                 const list = await res.json();
+                populateQuickProducts(list);
                 const tbody = document.getElementById('products-tbody');
                 tbody.innerHTML = '';
                 list.forEach(p => {

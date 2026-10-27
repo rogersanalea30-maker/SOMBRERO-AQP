@@ -28,6 +28,7 @@ from app.services.sunat_client import SunatSoapClient
 from app.services.pdf_generator import PDFGeneratorSUNAT
 from app.services.consulta_doc import consultar_documento_peru
 from app.services.credit_note_builder import UBL21CreditNoteBuilder
+from app.services.arca_scraper import ArcaDigitalScraper
 
 
 # 1. Crear tablas en la base de datos automáticamente
@@ -418,6 +419,43 @@ def previsualizar_xml_firmado(invoice_data: InvoiceRequest):
         xml_content=signed_xml_bytes.decode("utf-8"),
         signed_xml_path=signed_xml_path
     )
+
+
+# ==============================================================================
+# AUTOMATIZACIÓN Y SINCRONIZACIÓN CON ARCA DIGITAL
+# ==============================================================================
+
+@app.post("/api/v1/arca/sync", tags=["Arca Digital"])
+def api_sincronizar_arca(db: Session = Depends(get_db)):
+    """Ejecuta la sincronización automática de productos y clientes desde Arca Digital."""
+    scraper = ArcaDigitalScraper()
+    if not scraper.login():
+        raise HTTPException(status_code=502, detail="No se pudo iniciar sesión en sombrero.arca.digital")
+
+    result = scraper.sync_to_local_database(db)
+    return {
+        "success": True,
+        "message": "Sincronización completada exitosamente desde Arca Digital.",
+        "detalles": result
+    }
+
+
+@app.get("/api/v1/arca/company", tags=["Arca Digital"])
+def api_obtener_empresa_arca():
+    """Obtiene la configuración y datos fiscales configurados en Arca Digital."""
+    scraper = ArcaDigitalScraper()
+    company = scraper.get_company_profile()
+    if not company:
+        raise HTTPException(status_code=502, detail="Error obteniendo perfil de empresa desde Arca Digital.")
+    return company
+
+
+@app.get("/api/v1/arca/documents", tags=["Arca Digital"])
+def api_listar_documentos_arca(page: int = Query(1, ge=1)):
+    """Obtiene el listado en vivo de comprobantes emitidos en Arca Digital."""
+    scraper = ArcaDigitalScraper()
+    docs = scraper.get_documents(page=page)
+    return docs
 
 
 if __name__ == "__main__":

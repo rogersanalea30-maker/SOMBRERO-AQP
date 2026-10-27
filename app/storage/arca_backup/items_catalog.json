@@ -1,0 +1,942 @@
+[
+  {
+    "id": 96,
+    "codigo": "P01",
+    "descripcion": "PLATO DE PRUEBA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 11,
+    "valor_unitario": 9.322033898305085,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 95,
+    "codigo": "PENALIDAD",
+    "descripcion": "Penalidad",
+    "unidad_medida": "ZZ",
+    "precio_unitario": 0.0,
+    "valor_unitario": 0.0,
+    "tipo_afectacion": "30",
+    "activo": true
+  },
+  {
+    "id": 94,
+    "codigo": "DELIVERY-ECOM",
+    "descripcion": "Costo de Envío",
+    "unidad_medida": "ZZ",
+    "precio_unitario": 0.0,
+    "valor_unitario": 0.0,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 93,
+    "codigo": "ITM01",
+    "descripcion": "Por consumo",
+    "unidad_medida": "NIU",
+    "precio_unitario": 1,
+    "valor_unitario": 0.847457627118644,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 92,
+    "codigo": "P92",
+    "descripcion": "PORCION DE CHUÑO Y QUESO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 15,
+    "valor_unitario": 12.711864406779661,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 91,
+    "codigo": "A106",
+    "descripcion": "Almuerzo CHAQUE",
+    "unidad_medida": "NIU",
+    "precio_unitario": 22,
+    "valor_unitario": 18.64406779661017,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 89,
+    "codigo": "P89",
+    "descripcion": "Bolitas de chicle",
+    "unidad_medida": "NIU",
+    "precio_unitario": 1,
+    "valor_unitario": 0.847457627118644,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 88,
+    "codigo": "P88",
+    "descripcion": "Queso helado",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 86,
+    "codigo": "A110",
+    "descripcion": "ALMUERZO CALDO BLANCO (sabado)",
+    "unidad_medida": "NIU",
+    "precio_unitario": 23,
+    "valor_unitario": 19.491525423728813,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 85,
+    "codigo": "C123",
+    "descripcion": "Mate de Aniz",
+    "unidad_medida": "NIU",
+    "precio_unitario": 5,
+    "valor_unitario": 4.237288135593221,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 84,
+    "codigo": "C122",
+    "descripcion": "SARSA DE PATITAS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 24,
+    "valor_unitario": 20.338983050847457,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 83,
+    "codigo": "C121",
+    "descripcion": "CERVEZA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 13,
+    "valor_unitario": 11.016949152542374,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 82,
+    "codigo": "vc0111",
+    "descripcion": "POR CONSUMO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 1,
+    "valor_unitario": 0.847457627118644,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 81,
+    "codigo": "1222",
+    "descripcion": "CALDO DE PASCUA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 40,
+    "valor_unitario": 33.898305084745765,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 80,
+    "codigo": "1122",
+    "descripcion": "Locro de pecho",
+    "unidad_medida": "NIU",
+    "precio_unitario": 25,
+    "valor_unitario": 21.1864406779661,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 79,
+    "codigo": "C110",
+    "descripcion": "CERVEZA TRIGO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 12,
+    "valor_unitario": 10.169491525423728,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 78,
+    "codigo": "CC107",
+    "descripcion": "GASEOSA MEDIANA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 4,
+    "valor_unitario": 3.389830508474576,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 77,
+    "codigo": "CH106",
+    "descripcion": "VASO CHICHA DE JORA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 4,
+    "valor_unitario": 3.389830508474576,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 76,
+    "codigo": "GA100",
+    "descripcion": "GASEOSA LITRO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 75,
+    "codigo": "A100",
+    "descripcion": "ALMUERZO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 22,
+    "valor_unitario": 18.64406779661017,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 74,
+    "codigo": "NI101",
+    "descripcion": "MILANESA INFANTIL",
+    "unidad_medida": "NIU",
+    "precio_unitario": 24,
+    "valor_unitario": 20.338983050847457,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 73,
+    "codigo": "PE108",
+    "descripcion": "CHOCLO CON QUESO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 12,
+    "valor_unitario": 10.169491525423728,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 72,
+    "codigo": "PO102",
+    "descripcion": "MILANESA DE POLLO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 34,
+    "valor_unitario": 28.8135593220339,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 71,
+    "codigo": "V105",
+    "descripcion": "POR CONSUMO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 1,
+    "valor_unitario": 0.847457627118644,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 70,
+    "codigo": "V104",
+    "descripcion": "ES POR CONSUMO DE ALIMENTOS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 1,
+    "valor_unitario": 0.847457627118644,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 69,
+    "codigo": "V103",
+    "descripcion": "TAPER",
+    "unidad_medida": "NIU",
+    "precio_unitario": 2,
+    "valor_unitario": 1.694915254237288,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 68,
+    "codigo": "V102",
+    "descripcion": "PAN",
+    "unidad_medida": "NIU",
+    "precio_unitario": 1,
+    "valor_unitario": 0.847457627118644,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 67,
+    "codigo": "V101",
+    "descripcion": "TE",
+    "unidad_medida": "NIU",
+    "precio_unitario": 4,
+    "valor_unitario": 3.389830508474576,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 66,
+    "codigo": "A108",
+    "descripcion": "AMERICANO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 35,
+    "valor_unitario": 29.661016949152543,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 65,
+    "codigo": "A107",
+    "descripcion": "CALDO DE LOMOS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 32,
+    "valor_unitario": 27.11864406779661,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 64,
+    "codigo": "A105",
+    "descripcion": "ALMUERZO CHUÑO MOLIDO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 22,
+    "valor_unitario": 18.64406779661017,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 63,
+    "codigo": "A104",
+    "descripcion": "ALMUERZO MENESTRON",
+    "unidad_medida": "NIU",
+    "precio_unitario": 22,
+    "valor_unitario": 18.64406779661017,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 62,
+    "codigo": "A103",
+    "descripcion": "ALMUERZO CALDO BLANCO ( MIERCOLES )",
+    "unidad_medida": "NIU",
+    "precio_unitario": 22,
+    "valor_unitario": 18.64406779661017,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 61,
+    "codigo": "A102",
+    "descripcion": "ALMUERZO CHAYRO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 22,
+    "valor_unitario": 18.64406779661017,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 60,
+    "codigo": "A101",
+    "descripcion": "Bolsa",
+    "unidad_medida": "NIU",
+    "precio_unitario": 0.3,
+    "valor_unitario": 0.2542372881355932,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 59,
+    "codigo": "C109",
+    "descripcion": "VINO SANTIAGO QUEIROLO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 35,
+    "valor_unitario": 29.661016949152543,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 58,
+    "codigo": "C108",
+    "descripcion": "VINO TABERNERO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 35,
+    "valor_unitario": 29.661016949152543,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 57,
+    "codigo": "C107",
+    "descripcion": "ANIS NAJAR 1/4",
+    "unidad_medida": "NIU",
+    "precio_unitario": 15,
+    "valor_unitario": 12.711864406779661,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 56,
+    "codigo": "C106",
+    "descripcion": "ANIS NAJAR COPITA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 3,
+    "valor_unitario": 2.542372881355932,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 55,
+    "codigo": "C105",
+    "descripcion": "JARRA CHICHA DE JORA 1.5 LITROS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 15,
+    "valor_unitario": 12.711864406779661,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 54,
+    "codigo": "C104",
+    "descripcion": "JARRA CHICHA DE JORA 1 LITRO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 11,
+    "valor_unitario": 9.322033898305085,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 53,
+    "codigo": "C103",
+    "descripcion": "CERVEZA PILSEN CALLAO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 12,
+    "valor_unitario": 10.169491525423728,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 52,
+    "codigo": "C102",
+    "descripcion": "CERVEZA NEGRA CUZQUEÑA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 12,
+    "valor_unitario": 10.169491525423728,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 51,
+    "codigo": "C101",
+    "descripcion": "CERVEZA BLANCA CUZQUEÑA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 12,
+    "valor_unitario": 10.169491525423728,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 50,
+    "codigo": "C100",
+    "descripcion": "CERVEZA BLANCA AREQUIPEÑA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 11,
+    "valor_unitario": 9.322033898305085,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 49,
+    "codigo": "AG100",
+    "descripcion": "AGUA MEDIO LITRO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 4,
+    "valor_unitario": 3.389830508474576,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 48,
+    "codigo": "ES101",
+    "descripcion": "GASEOSA ESCOCESA LITRO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 47,
+    "codigo": "IK101",
+    "descripcion": "GASEOSA INKA COLA LITRO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 46,
+    "codigo": "CC101",
+    "descripcion": "GASEOSA COCA COLA LITRO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 45,
+    "codigo": "ES100",
+    "descripcion": "GASEOSA ESCOCESA MEDIANA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 4,
+    "valor_unitario": 3.389830508474576,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 44,
+    "codigo": "IK100",
+    "descripcion": "GASEOSA INKA COLA MEDIANA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 4,
+    "valor_unitario": 3.389830508474576,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 43,
+    "codigo": "CC100",
+    "descripcion": "GASEOSA COCA COLA MEDIANA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 4,
+    "valor_unitario": 3.389830508474576,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 42,
+    "codigo": "PP100",
+    "descripcion": "PORCIÓN DE PAPA FRITA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 41,
+    "codigo": "PA100",
+    "descripcion": "PORCIÓN DE ARROZ",
+    "unidad_medida": "NIU",
+    "precio_unitario": 8,
+    "valor_unitario": 6.779661016949152,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 40,
+    "codigo": "DF103",
+    "descripcion": "PASTEL DE PAPAS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 20,
+    "valor_unitario": 16.949152542372882,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 39,
+    "codigo": "DF102",
+    "descripcion": "CALDO DE LOMOS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 32,
+    "valor_unitario": 27.11864406779661,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 38,
+    "codigo": "DF101",
+    "descripcion": "ARROZ CON PATO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 40,
+    "valor_unitario": 33.898305084745765,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 37,
+    "codigo": "DF100",
+    "descripcion": "ADOBO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 21,
+    "valor_unitario": 17.796610169491526,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 36,
+    "codigo": "PO104",
+    "descripcion": "POLLO A LA PLANCHA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 34,
+    "valor_unitario": 28.8135593220339,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 35,
+    "codigo": "PO105",
+    "descripcion": "DIETA DE POLLO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 25,
+    "valor_unitario": 21.1864406779661,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 34,
+    "codigo": "PO103",
+    "descripcion": "POLLO DORADO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 30,
+    "valor_unitario": 25.423728813559322,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 33,
+    "codigo": "PO101",
+    "descripcion": "CHICHARRON DE POLLO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 34,
+    "valor_unitario": 28.8135593220339,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 32,
+    "codigo": "PQ102",
+    "descripcion": "PIQUEO DE CHICHARRON DE CHANCHO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 70,
+    "valor_unitario": 59.32203389830509,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 31,
+    "codigo": "PQ101",
+    "descripcion": "PIQUEO MIXTO ( chancho y pollo )",
+    "unidad_medida": "NIU",
+    "precio_unitario": 75,
+    "valor_unitario": 63.559322033898304,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 30,
+    "codigo": "PQ100",
+    "descripcion": "TRIPLE SOMBRERO AREQUIPEÑO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 80,
+    "valor_unitario": 67.79661016949153,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 29,
+    "codigo": "PC104",
+    "descripcion": "TRUCHA AL VAPOR ( ensalada y papa sancochada)",
+    "unidad_medida": "NIU",
+    "precio_unitario": 35,
+    "valor_unitario": 29.661016949152543,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 28,
+    "codigo": "PC103",
+    "descripcion": "TRUCHA FRITA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 35,
+    "valor_unitario": 29.661016949152543,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 27,
+    "codigo": "PC102",
+    "descripcion": "CORVINA FRITA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 0.0,
+    "valor_unitario": 0.0,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 26,
+    "codigo": "PC101",
+    "descripcion": "TORTILLA DE CAMARONES",
+    "unidad_medida": "NIU",
+    "precio_unitario": 55,
+    "valor_unitario": 46.610169491525426,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 25,
+    "codigo": "PC100",
+    "descripcion": "CHUPE DE CAMARON",
+    "unidad_medida": "NIU",
+    "precio_unitario": 50,
+    "valor_unitario": 42.3728813559322,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 24,
+    "codigo": "PF115",
+    "descripcion": "UBRE ARREBOZADA ( ensalada y papa dorada)",
+    "unidad_medida": "NIU",
+    "precio_unitario": 23,
+    "valor_unitario": 19.491525423728813,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 23,
+    "codigo": "PF114",
+    "descripcion": "TRIPLE",
+    "unidad_medida": "NIU",
+    "precio_unitario": 60,
+    "valor_unitario": 50.847457627118644,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 22,
+    "codigo": "PF113",
+    "descripcion": "ZARZA DE PATITAS DE CHANCHO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 24,
+    "valor_unitario": 20.338983050847457,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 21,
+    "codigo": "PF112",
+    "descripcion": "ZARZA DE PATITAS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 24,
+    "valor_unitario": 20.338983050847457,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 20,
+    "codigo": "PF111",
+    "descripcion": "ZARZA DE CABEZA DE CHANCHO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 24,
+    "valor_unitario": 20.338983050847457,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 19,
+    "codigo": "PF110",
+    "descripcion": "RACHI DE PANZA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 31,
+    "valor_unitario": 26.271186440677965,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 18,
+    "codigo": "PF109",
+    "descripcion": "MALAYA DORADA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 41,
+    "valor_unitario": 34.74576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 17,
+    "codigo": "PF108",
+    "descripcion": "DOBLE",
+    "unidad_medida": "NIU",
+    "precio_unitario": 52,
+    "valor_unitario": 44.067796610169495,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 16,
+    "codigo": "PF107",
+    "descripcion": "CUY CHACTADO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 64,
+    "valor_unitario": 54.23728813559322,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 15,
+    "codigo": "PF106",
+    "descripcion": "COSTILLAR DORADO DE CORDERO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 49,
+    "valor_unitario": 41.52542372881356,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 14,
+    "codigo": "PF105",
+    "descripcion": "CHULETA MIXTA: RES CON CHANCHO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 48,
+    "valor_unitario": 40.67796610169491,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 13,
+    "codigo": "PF104",
+    "descripcion": "CHULETA DE RES",
+    "unidad_medida": "NIU",
+    "precio_unitario": 34,
+    "valor_unitario": 28.8135593220339,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 12,
+    "codigo": "PF103",
+    "descripcion": "CHULETA DE RES CON CHUÑO Y QUESO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 45,
+    "valor_unitario": 38.13559322033898,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 11,
+    "codigo": "PF102",
+    "descripcion": "CHULETA DE CHANCHO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 34,
+    "valor_unitario": 28.8135593220339,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 10,
+    "codigo": "PF101",
+    "descripcion": "CHICHARRON DE CHANCHO entero",
+    "unidad_medida": "NIU",
+    "precio_unitario": 50,
+    "valor_unitario": 42.3728813559322,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 9,
+    "codigo": "PF100",
+    "descripcion": "CHICHARRON DE CHANCHO medio",
+    "unidad_medida": "NIU",
+    "precio_unitario": 40,
+    "valor_unitario": 33.898305084745765,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 8,
+    "codigo": "PE107",
+    "descripcion": "ESCRIBANO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 7,
+    "codigo": "PE106",
+    "descripcion": "SOLTERO DE QUESO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 20,
+    "valor_unitario": 16.949152542372882,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 6,
+    "codigo": "PE105",
+    "descripcion": "SARZA DE CRIADILLAS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 16,
+    "valor_unitario": 13.559322033898304,
+    "tipo_afectacion": "10",
+    "activo": false
+  },
+  {
+    "id": 5,
+    "codigo": "PE104",
+    "descripcion": "ROCOTO RELLENO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 25,
+    "valor_unitario": 21.1864406779661,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 4,
+    "codigo": "PE103",
+    "descripcion": "QUESO FRITO",
+    "unidad_medida": "NIU",
+    "precio_unitario": 20,
+    "valor_unitario": 16.949152542372882,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 3,
+    "codigo": "PE102",
+    "descripcion": "OCOPA AREQUIPEÑA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 20,
+    "valor_unitario": 16.949152542372882,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 2,
+    "codigo": "PE101",
+    "descripcion": "MOTE DE HABAS",
+    "unidad_medida": "NIU",
+    "precio_unitario": 11,
+    "valor_unitario": 9.322033898305085,
+    "tipo_afectacion": "10",
+    "activo": true
+  },
+  {
+    "id": 1,
+    "codigo": "PE100",
+    "descripcion": "PORCIÓN DE ENSALADA",
+    "unidad_medida": "NIU",
+    "precio_unitario": 10,
+    "valor_unitario": 8.474576271186441,
+    "tipo_afectacion": "10",
+    "activo": true
+  }
+]
