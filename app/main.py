@@ -194,6 +194,46 @@ def serve_digital_menu(mesa_id: Optional[str] = None):
             return HTMLResponse(content=f.read())
     return HTMLResponse("<h1>Carta Digital no encontrada</h1>")
 
+@app.get("/logo.svg", response_class=FileResponse, tags=["Static"])
+@app.get("/static/logo.svg", response_class=FileResponse, tags=["Static"])
+def serve_logo_svg():
+    logo_file = os.path.join(static_dir, "logo.svg")
+    if os.path.exists(logo_file):
+        return FileResponse(logo_file, media_type="image/svg+xml")
+    raise HTTPException(status_code=404, detail="Logo no encontrado")
+
+
+@app.get("/favicon.svg", response_class=FileResponse, tags=["Static"])
+@app.get("/favicon.ico", response_class=FileResponse, tags=["Static"])
+@app.get("/static/favicon.svg", response_class=FileResponse, tags=["Static"])
+def serve_favicon_svg():
+    fav_file = os.path.join(static_dir, "favicon.svg")
+    if os.path.exists(fav_file):
+        return FileResponse(fav_file, media_type="image/svg+xml")
+    raise HTTPException(status_code=404, detail="Favicon no encontrado")
+
+
+@app.get("/static/{file_path:path}", tags=["Static"])
+def serve_static_fallback(file_path: str):
+    file_full = os.path.join(static_dir, file_path)
+    if os.path.exists(file_full) and os.path.isfile(file_full):
+        mt = "text/plain"
+        if file_full.endswith(".svg"):
+            mt = "image/svg+xml"
+        elif file_full.endswith(".png"):
+            mt = "image/png"
+        elif file_full.endswith(".jpg") or file_full.endswith(".jpeg"):
+            mt = "image/jpeg"
+        elif file_full.endswith(".css"):
+            mt = "text/css"
+        elif file_full.endswith(".js"):
+            mt = "application/javascript"
+        elif file_full.endswith(".html"):
+            mt = "text/html"
+        return FileResponse(file_full, media_type=mt)
+    raise HTTPException(status_code=404, detail="Archivo estatico no encontrado")
+
+
 
 @app.get("/health", tags=["General"])
 def health_check():
