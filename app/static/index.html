@@ -679,7 +679,7 @@
                 <a href="javascript:void(0)" onclick="openQrModal()" id="nav-qr" class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-slate-600 hover:text-purple-600 hover:bg-purple-50 transition group">
                     <div class="flex items-center space-x-2 truncate">
                         <i class="fa-solid fa-qrcode w-6 text-base text-purple-500"></i>
-                        <span class="truncate">QR para Mesas</span>
+                        <span class="truncate">QR Carta de Platos</span>
                     </div>
                     <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Imprimir</span>
                 </a>
@@ -4450,11 +4450,8 @@
         let qrCodeInstance = null;
 
         function openQrModal() {
-            const table = state.tables.find(t => t.id === state.currentTableId);
             const select = document.getElementById('qr-table-select');
-            if (select && table) {
-                select.value = table.name;
-            }
+            if (select) select.value = 'TODOS';
             generateTableQrCode();
             document.getElementById('modal-menu-qr').classList.remove('hidden');
         }
@@ -4465,7 +4462,7 @@
 
         function generateTableQrCode() {
             const select = document.getElementById('qr-table-select');
-            const selectedVal = select ? select.value : 'TODOS';
+            const selectedVal = (select && select.value) ? select.value : 'TODOS';
             const badge = document.getElementById('qr-table-badge');
             
             let label = '🍽️ CARTA DE PLATOS & PRODUCTOS';
@@ -4476,7 +4473,7 @@
 
             const host = window.location.host || 'sombrero-aqp.vercel.app';
             const protocol = window.location.protocol || 'https:';
-            const param = selectedVal === 'TODOS' ? '' : `?cat=${encodeURIComponent(selectedVal)}`;
+            const param = (!selectedVal || selectedVal === 'TODOS') ? '' : `?cat=${encodeURIComponent(selectedVal)}`;
             const fullUrl = `${protocol}//${host}/carta${param}`;
 
             const input = document.getElementById('qr-direct-url');
@@ -4484,9 +4481,24 @@
 
             const qrBox = document.getElementById('qrcode-display-box');
             if (qrBox) {
-                // High-resolution instant cloud QR generator (100% reliable on all phones and networks)
+                qrBox.innerHTML = '';
                 const cloudQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=4&data=${encodeURIComponent(fullUrl)}`;
-                qrBox.innerHTML = `<img src="${cloudQrUrl}" alt="Código QR Carta de Platos" class="w-48 h-48 mx-auto rounded-xl shadow-xs border border-slate-200">`;
+                if (typeof QRCode !== 'undefined') {
+                    try {
+                        new QRCode(qrBox, {
+                            text: fullUrl,
+                            width: 190,
+                            height: 190,
+                            colorDark: "#0f172a",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
+                    } catch (e) {
+                        qrBox.innerHTML = `<img src="${cloudQrUrl}" alt="Código QR Carta de Platos" class="w-48 h-48 mx-auto rounded-xl shadow-xs border border-slate-200">`;
+                    }
+                } else {
+                    qrBox.innerHTML = `<img src="${cloudQrUrl}" alt="Código QR Carta de Platos" class="w-48 h-48 mx-auto rounded-xl shadow-xs border border-slate-200">`;
+                }
             }
         }
 
