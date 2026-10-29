@@ -15,9 +15,5 @@
       "src": "/(.*)",
       "dest": "app/main.py"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "postgresql+psycopg://postgres.psnymtlltxlqgszwiril:1717foreverprozwxd@aws-1-us-west-2.pooler.supabase.com:5432/postgres?sslmode=require",
-    "SUNAT_ENV": "BETA"
-  }
+  ]
 }

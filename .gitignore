@@ -11,8 +11,13 @@ build/
 dist/
 *.egg-info/
 
-# Archivos de entorno y certificados privados
+# Archivos de entorno y certificados privados (PROTEGIDOS - NUNCA SUBIR A GIT)
 .env
+.env.*
+*.env
+.env.local
+.env.production
+.env.development
 app/certificates/*.pfx
 app/certificates/*.p12
 app/certificates/*.key
