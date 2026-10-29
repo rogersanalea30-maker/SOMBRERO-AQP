@@ -494,6 +494,7 @@
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- QR Code Generator JS (Local) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="/static/js/qrcode.min.js"></script>
     <style>
         body { font-family: 'Figtree', sans-serif; }
@@ -4499,17 +4500,22 @@
             if (qrBox) {
                 qrBox.innerHTML = '';
                 try {
-                    qrCodeInstance = new QRCode(qrBox, {
-                        text: fullUrl,
-                        width: 200,
-                        height: 200,
-                        colorDark: "#271206",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.M
-                    });
+                    if (typeof QRCode !== 'undefined') {
+                        qrCodeInstance = new QRCode(qrBox, {
+                            text: fullUrl,
+                            width: 200,
+                            height: 200,
+                            colorDark: "#0f172a",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
+                    } else {
+                        throw new Error("QRCode library not loaded, using cloud renderer");
+                    }
                 } catch (e) {
-                    console.error("QRCode generation error:", e);
-                    qrBox.innerHTML = `<div class="p-4 text-xs font-mono text-slate-500">QR: ${fullUrl}</div>`;
+                    console.warn("Using fallback QR image generator:", e);
+                    const cloudQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=4&data=${encodeURIComponent(fullUrl)}`;
+                    qrBox.innerHTML = `<img src="${cloudQrUrl}" alt="Código QR Carta" class="w-48 h-48 mx-auto rounded-xl shadow-xs border border-slate-200">`;
                 }
             }
         }
