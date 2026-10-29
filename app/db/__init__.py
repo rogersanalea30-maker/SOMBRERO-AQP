@@ -4,7 +4,8 @@ from app.db.models import (
     ProductModel,
     InvoiceSeriesModel,
     InvoiceModel,
-    InvoiceItemModel
+    InvoiceItemModel,
+    UserModel
 )
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "InvoiceSeriesModel",
     "InvoiceModel",
     "InvoiceItemModel",
+    "UserModel",
 ]

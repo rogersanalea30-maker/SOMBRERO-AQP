@@ -79,7 +79,7 @@ class ItemSchema(BaseModel):
         TipoAfectacionIgvEnum.GRAVADO_OPERACION_ONEROSA,
         description="Código de afectación al IGV (Catálogo 07: 10=Gravado, 20=Exonerado, etc.)"
     )
-    porcentaje_igv: Decimal = Field(Decimal("18.00"), description="Tasa de IGV (normalmente 18.00)")
+    porcentaje_igv: Decimal = Field(Decimal("10.50"), description="Tasa de IGV Especial Restaurantes Ley 31556 (10.50%)")
 
     @model_validator(mode="after")
     def compute_fields(self):

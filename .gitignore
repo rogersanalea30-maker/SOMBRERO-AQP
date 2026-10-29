@@ -8,20 +8,8 @@ env/
 venv/
 ENV/
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
 
 # Archivos de entorno y certificados privados
 .env
@@ -38,8 +26,32 @@ app/storage/zip/*
 !app/storage/zip/.gitkeep
 app/storage/cdr/*
 !app/storage/cdr/.gitkeep
+app/storage/pdf/*
+!app/storage/pdf/.gitkeep
+*.db
+app/storage/facturacion.db
 
-# IDEs
+# IDEs y sistemas
 .vscode/
 .idea/
 *.swp
+.DS_Store
+
+# Scripts de inspeccion temporal y capturas de prueba
+inspect_*.py
+check_*.py
+patch_*.py
+test_*.py
+find_*.py
+apply_*.py
+capture_*.py
+list_*.py
+populate_*.py
+quick_*.py
+sync_*.py
+*.bak*
+*.png
+*.webp
+!app/static/favicon.png
+!app/static/logo.png
+!app/static/logo_icon.png

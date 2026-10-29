@@ -34,7 +34,9 @@ class ProductModel(Base):
     valor_unitario = Column(Numeric(12, 4), nullable=False)  # Sin IGV
     precio_unitario = Column(Numeric(12, 2), nullable=False)  # Con IGV
     tipo_afectacion = Column(String(2), default="10")  # 10=Gravado, 20=Exonerado, 30=Inafecto
-    porcentaje_igv = Column(Numeric(5, 2), default=Decimal("18.00"))
+    porcentaje_igv = Column(Numeric(5, 2), default=Decimal("10.50"))
+    categoria = Column(String(50), default="Platos de Fondo", nullable=True)
+    imagen_url = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -112,3 +114,23 @@ class InvoiceItemModel(Base):
     valor_venta = Column(Numeric(12, 2), nullable=False)
 
     invoice = relationship("InvoiceModel", back_populates="items")
+
+
+class UserModel(Base):
+    """Catálogo de Usuarios y Perfiles de Acceso (Admin, Cajero, Mozo, Cocina)"""
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    nombre_completo = Column(String(100), nullable=False)
+    rol = Column(String(20), nullable=False, default="MOZO")  # ADMIN, CAJERO, MOZO, COCINA
+    pin = Column(String(10), nullable=False, default="1234")
+    password = Column(String(100), nullable=False, default="123456")
+    email = Column(String(100), nullable=True)
+    telefono = Column(String(30), nullable=True)
+    zona_asignada = Column(String(50), default="Todas", nullable=True)
+    permisos_json = Column(Text, default="", nullable=True)
+    activo = Column(Boolean, default=True)
+    avatar_color = Column(String(30), default="amber")
+    created_at = Column(DateTime, default=datetime.utcnow)
+

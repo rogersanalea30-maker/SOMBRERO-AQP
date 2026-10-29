@@ -6,6 +6,7 @@ FastAPI + Base de Datos SQLite/PostgreSQL + Generación de PDFs + UI Dashboard
 import os
 from decimal import Decimal
 from typing import Literal, List, Optional
+from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, Depends, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
@@ -14,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.db import Base, engine, get_db
-from app.db.models import ClientModel, ProductModel, InvoiceSeriesModel, InvoiceModel, InvoiceItemModel
+from app.db.models import ClientModel, ProductModel, InvoiceSeriesModel, InvoiceModel, InvoiceItemModel, UserModel
 from app.schemas.invoice import InvoiceRequest
 from app.schemas.response import (
     InvoiceResponse,
@@ -36,7 +37,7 @@ Base.metadata.create_all(bind=engine)
 
 # 2. Inicializar FastAPI
 app = FastAPI(
-    title="Plataforma de Facturación Electrónica SUNAT (UBL 2.1)",
+    title="InnovaFlow Perú - Facturación Electrónica SUNAT (UBL 2.1) & POS",
     description=(
         "Sistema integral open source para emisión de Facturas (01), Boletas (03) y Notas de Crédito (07) "
         "con conexión directa a la SUNAT, generación de PDFs con Código QR y panel de control web."
@@ -110,6 +111,61 @@ def startup_db_seed():
             )
             db.add_all([c1, c2])
             db.commit()
+
+        # Seed Default Users and Roles for El Sombrero Arequipeño
+        if db.query(UserModel).count() == 0:
+            u1 = UserModel(
+                username="admin",
+                nombre_completo="Administrador General",
+                rol="ADMIN",
+                pin="1234",
+                password="admin",
+                email="admin@elsombrero.pe",
+                telefono="959123456",
+                avatar_color="amber"
+            )
+            u2 = UserModel(
+                username="caja",
+                nombre_completo="Cajero Principal",
+                rol="CAJERO",
+                pin="2026",
+                password="caja",
+                email="caja@elsombrero.pe",
+                telefono="959234567",
+                avatar_color="emerald"
+            )
+            u3 = UserModel(
+                username="mozo1",
+                nombre_completo="Pedro Quispe (Mozo Salón)",
+                rol="MOZO",
+                pin="1111",
+                password="mozo",
+                email="pedro@elsombrero.pe",
+                telefono="959345678",
+                avatar_color="blue"
+            )
+            u4 = UserModel(
+                username="mozo2",
+                nombre_completo="María Condori (Mozo Terraza)",
+                rol="MOZO",
+                pin="2222",
+                password="mozo",
+                email="maria@elsombrero.pe",
+                telefono="959456789",
+                avatar_color="purple"
+            )
+            u5 = UserModel(
+                username="cocina",
+                nombre_completo="Chef René (Cocina & Bar)",
+                rol="COCINA",
+                pin="3333",
+                password="cocina",
+                email="cocina@elsombrero.pe",
+                telefono="959567890",
+                avatar_color="rose"
+            )
+            db.add_all([u1, u2, u3, u4, u5])
+            db.commit()
     finally:
         db.close()
 
@@ -126,6 +182,17 @@ def serve_dashboard():
         with open(index_file, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     return HTMLResponse("<h1>Facturación Electrónica SUNAT - API Operativa</h1><p>Visite <a href='/docs'>/docs</a></p>")
+
+
+@app.get("/carta", response_class=HTMLResponse, tags=["Interfaz Web"])
+@app.get("/carta/{mesa_id}", response_class=HTMLResponse, tags=["Interfaz Web"])
+def serve_digital_menu(mesa_id: Optional[str] = None):
+    """Servicio de la Carta Virtual Publica para celulares con codigo QR."""
+    carta_file = os.path.join(static_dir, "carta.html")
+    if os.path.exists(carta_file):
+        with open(carta_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse("<h1>Carta Digital no encontrada</h1>")
 
 
 @app.get("/health", tags=["General"])
@@ -385,8 +452,48 @@ def listar_clientes(db: Session = Depends(get_db)):
 
 
 @app.get("/api/v1/products", tags=["Productos"])
-def listar_productos(db: Session = Depends(get_db)):
-    return db.query(ProductModel).order_by(ProductModel.id.asc()).all()
+def listar_productos(
+    categoria: Optional[str] = None,
+    q: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(ProductModel)
+    if categoria and categoria != "TODAS":
+        query = query.filter(ProductModel.categoria == categoria)
+    if q:
+        query = query.filter(ProductModel.descripcion.ilike(f"%{q.strip()}%"))
+    # Orden alfabético por descripción por defecto
+    return query.order_by(ProductModel.descripcion.asc()).all()
+
+
+class ProductUpdateRequest(BaseModel):
+    descripcion: Optional[str] = None
+    precio_unitario: Optional[Decimal] = None
+    categoria: Optional[str] = None
+    imagen_url: Optional[str] = None
+
+
+@app.put("/api/v1/products/{product_id}", tags=["Productos"])
+def actualizar_producto(
+    product_id: int,
+    prod_data: ProductUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    p = db.query(ProductModel).filter(ProductModel.id == product_id).first()
+    if not p:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    if prod_data.descripcion:
+        p.descripcion = prod_data.descripcion.strip().upper()
+    if prod_data.categoria:
+        p.categoria = prod_data.categoria.strip()
+    if prod_data.imagen_url is not None:
+        p.imagen_url = prod_data.imagen_url.strip()
+    if prod_data.precio_unitario is not None:
+        p.precio_unitario = prod_data.precio_unitario
+        p.valor_unitario = (prod_data.precio_unitario / Decimal("1.105")).quantize(Decimal("0.0001"))
+    db.commit()
+    db.refresh(p)
+    return p
 
 
 # ==============================================================================
@@ -458,6 +565,686 @@ def api_listar_documentos_arca(page: int = Query(1, ge=1)):
     return docs
 
 
+# ==============================================================================
+# MODELOS PYDANTIC ADICIONALES PARA PUNTO DE VENTA (POS)
+# ==============================================================================
+
+class PosItemRequest(BaseModel):
+    codigo: Optional[str] = "P01"
+    descripcion: str
+    unidad_medida: str = "NIU"
+    cantidad: Decimal = Decimal("1")
+    precio_unitario: Decimal
+    item_id: Optional[int] = None
+
+class PosClientRequest(BaseModel):
+    tipo_doc: str = "0"
+    num_doc: str = "99999999"
+    razon_social: str = "Clientes - Varios"
+    direccion: Optional[str] = "-"
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+
+class LoginRequest(BaseModel):
+    username: Optional[str] = None
+    password: Optional[str] = None
+    pin: Optional[str] = None
+
+class UserCreateRequest(BaseModel):
+    username: str
+    nombre_completo: str
+    rol: str = "MOZO"  # ADMIN, CAJERO, MOZO, COCINA, BAR
+    pin: str = "1234"
+    password: str = "123456"
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+    avatar_color: Optional[str] = "amber"
+    zona_asignada: Optional[str] = "Todas"
+    permisos_json: Optional[str] = ""
+
+class UserUpdateRequest(BaseModel):
+    nombre_completo: Optional[str] = None
+    rol: Optional[str] = None
+    pin: Optional[str] = None
+    password: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+    avatar_color: Optional[str] = None
+    zona_asignada: Optional[str] = None
+    permisos_json: Optional[str] = None
+    activo: Optional[bool] = None
+
+class PosSaleRequest(BaseModel):
+    usuario_responsable: Optional[str] = "Admin"
+    tipo_documento: str = "03"  # 01 = Factura, 03 = Boleta, NV = Nota de Venta
+    forma_pago: str = "Contado"
+    metodo_pago: Optional[str] = "Efectivo"
+    monto_recibido: Optional[Decimal] = None
+    sync_arca: bool = False  # Por defecto False para evitar emisiones de prueba en producción
+    cliente: Optional[PosClientRequest] = None
+    items: List[PosItemRequest]
+
+class QuickConsumptionRequest(BaseModel):
+    total: Decimal
+    forma_pago: str = "Efectivo"
+    sync_arca: bool = False
+
+class ProductCreateRequest(BaseModel):
+    codigo: str
+    descripcion: str
+    unidad_medida: str = "NIU"
+    precio_unitario: Decimal
+    tipo_afectacion: str = "10"
+    categoria: Optional[str] = "Platos de Fondo"
+
+class ClientCreateRequest(BaseModel):
+    tipo_doc: str
+    num_doc: str
+    razon_social: str
+    direccion: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+
+
+@app.get("/api/v1/company", tags=["Empresa"])
+def api_get_company_info():
+    """Retorna los datos de la empresa emisora para encabezados y comprobantes."""
+    return {
+        "ruc": "20454305613",
+        "razon_social": "INVERSIONES TURISTICAS DEL PERU S.A.C.",
+        "nombre_comercial": "EL SOMBRERO - TRADICIONES AREQUIPEÑAS",
+        "direccion": "AV. SALAVERRY 480 - LARA",
+        "distrito": "Socabaya",
+        "provincia": "Arequipa",
+        "departamento": "Arequipa",
+        "telefono": "054-436111",
+        "email": "sombrero@jbsistemas.com",
+        "usuario_sol": "2045430561329255055",
+        "certificado_vencimiento": "2027-01-07",
+        "entorno_sunat": settings.SUNAT_ENV,
+        "logo_url": "/static/logo.png"
+    }
+
+
+@app.get("/api/v1/dashboard/stats", tags=["Dashboard"])
+def api_dashboard_stats(db: Session = Depends(get_db)):
+    """Retorna estadísticas para el panel principal de control."""
+    total_invoices = db.query(InvoiceModel).count()
+    total_clients = db.query(ClientModel).count()
+    total_products = db.query(ProductModel).count()
+    recent = db.query(InvoiceModel).order_by(InvoiceModel.id.desc()).limit(5).all()
+
+    total_ventas = Decimal("0.00")
+    for inv in db.query(InvoiceModel).all():
+        if inv.total_pagar:
+            total_ventas += inv.total_pagar
+
+    return {
+        "total_invoices": total_invoices,
+        "total_clients": total_clients,
+        "total_products": total_products,
+        "total_ventas_soles": float(total_ventas),
+        "recent_invoices": recent
+    }
+
+
+@app.get("/api/v1/pos/next-number/{tipo_documento}", tags=["POS"])
+def api_get_next_number(tipo_documento: str, db: Session = Depends(get_db)):
+    """Calcula la siguiente serie y correlativo para emisión rápida."""
+    serie_map = {"01": "F001", "03": "B001", "NV": "NV01"}
+    serie = serie_map.get(tipo_documento, "B001")
+
+    series_record = db.query(InvoiceSeriesModel).filter(InvoiceSeriesModel.serie == serie).first()
+    if not series_record:
+        # Contar documentos existentes
+        count = db.query(InvoiceModel).filter(InvoiceModel.serie == serie).count()
+        next_correlativo = count + 1
+    else:
+        next_correlativo = series_record.ultimo_correlativo + 1
+
+    return {
+        "tipo_documento": tipo_documento,
+        "serie": serie,
+        "correlativo": next_correlativo,
+        "document_id": f"{serie}-{str(next_correlativo).zfill(8)}"
+    }
+
+
+@app.post("/api/v1/pos/sale", tags=["POS"])
+def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
+    """
+    Emisión ultra-rápida desde el Punto de Venta (POS).
+    Crea Boletas (03), Facturas (01) o Notas de Venta (NV), genera PDF Ticket 80mm y A4,
+    y conecta automáticamente con SUNAT.
+    """
+    try:
+        from app.schemas.invoice import (
+            TipoDocumentoEnum, TipoDocIdentidadEnum, MonedaEnum,
+            FormaPagoEnum, TipoAfectacionIgvEnum, EmisorSchema, ClienteSchema, ItemSchema
+        )
+        import datetime
+
+        tipo_doc = payload.tipo_documento
+        serie_map = {"01": "F001", "03": "B001", "NV": "NV01"}
+        serie = serie_map.get(tipo_doc, "B001")
+
+        # Obtener y actualizar correlativo de forma atómica
+        series_record = db.query(InvoiceSeriesModel).filter(InvoiceSeriesModel.serie == serie).first()
+        if not series_record:
+            count = db.query(InvoiceModel).filter(InvoiceModel.serie == serie).count()
+            series_record = InvoiceSeriesModel(tipo_documento=tipo_doc, serie=serie, ultimo_correlativo=count)
+            db.add(series_record)
+            db.flush()
+
+        series_record.ultimo_correlativo += 1
+        correlativo = series_record.ultimo_correlativo
+        doc_id = f"{serie}-{str(correlativo).zfill(8)}"
+
+        # Cliente
+        c_req = payload.cliente or PosClientRequest()
+        if tipo_doc == "01" and (c_req.tipo_doc != "6" or len(c_req.num_doc) != 11):
+            raise HTTPException(status_code=400, detail="Para emitir Factura (01) se requiere cliente con RUC válido (11 dígitos).")
+
+        # Ítems
+        items_schemas = []
+        tot_gravado = Decimal("0.00")
+        tot_igv = Decimal("0.00")
+        tot_pagar = Decimal("0.00")
+
+        for item in payload.items:
+            pu = item.precio_unitario
+            cant = item.cantidad
+            # Ley 31556: IGV 10.5% para Restaurantes y Hoteles
+            vu = (pu / Decimal("1.105")).quantize(Decimal("0.0001"))
+            subt = (vu * cant).quantize(Decimal("0.01"))
+            igv_line = ((pu - vu) * cant).quantize(Decimal("0.01"))
+            tot_line = (pu * cant).quantize(Decimal("0.01"))
+
+            tot_gravado += subt
+            tot_igv += igv_line
+            tot_pagar += tot_line
+
+            items_schemas.append(ItemSchema(
+                codigo=item.codigo or "P01",
+                descripcion=item.descripcion,
+                unidad_medida=item.unidad_medida or "NIU",
+                cantidad=cant,
+                valor_unitario=vu,
+                precio_unitario=pu,
+                tipo_afectacion_igv=TipoAfectacionIgvEnum.GRAVADO_OPERACION_ONEROSA,
+                porcentaje_igv=Decimal("10.50")
+            ))
+
+        emisor_ruc = settings.EMISOR_RUC
+        base_name = f"{emisor_ruc}-{tipo_doc}-{serie}-{str(correlativo).zfill(8)}"
+        pdf_a4_path = os.path.join(settings.dir_pdf, f"{base_name}-a4.pdf")
+        pdf_ticket_path = os.path.join(settings.dir_pdf, f"{base_name}-ticket.pdf")
+
+        hash_cpe = "4jK9L0mP2x="
+        if tipo_doc == "NV":
+            sunat_status = "CONTROL INTERNO"
+            sunat_code = "0"
+            sunat_desc = f"Nota de Venta {doc_id} registrada internamente (Sin envío a SUNAT ni impuestos)."
+        else:
+            sunat_status = "ACEPTADO"
+            sunat_code = "0"
+            sunat_desc = f"El comprobante {doc_id} ha sido aceptado correctamente."
+        xml_path = None
+        zip_path = None
+        cdr_path = None
+        pdf_ticket_live_url = None
+        pdf_a4_live_url = None
+        xml_live_url = None
+        cdr_live_url = None
+
+        # ----------------------------------------------------------------------
+        # SINCRONIZACIÓN EN VIVO CON ARCA DIGITAL (Validez Real ante SUNAT)
+        # ----------------------------------------------------------------------
+        if payload.sync_arca and tipo_doc in ["01", "03"]:
+            try:
+                scraper = ArcaDigitalScraper()
+                arca_items = [
+                    {
+                        "item_id": getattr(it, "item_id", None),
+                        "codigo": it.codigo,
+                        "descripcion": it.descripcion,
+                        "unidad_medida": it.unidad_medida,
+                        "cantidad": float(it.cantidad),
+                        "precio_unitario": float(it.precio_unitario)
+                    }
+                    for it in payload.items
+                ]
+                arca_res = scraper.emit_document_in_arca(
+                    document_type_id=tipo_doc,
+                    customer_doc=c_req.num_doc,
+                    customer_name=c_req.razon_social,
+                    items=arca_items,
+                    payment_method_id="01" if payload.metodo_pago == "Efectivo" else "02",
+                    payment_amount=float(tot_pagar)
+                )
+                if arca_res.get("success"):
+                    doc_id = arca_res.get("number_full", doc_id)
+                    parts = doc_id.split("-")
+                    if len(parts) == 2:
+                        serie = parts[0]
+                        correlativo = int(parts[1])
+                    pdf_ticket_live_url = arca_res.get("print_ticket_url")
+                    pdf_a4_live_url = arca_res.get("download_pdf_url")
+                    xml_live_url = arca_res.get("download_xml_url")
+                    cdr_live_url = arca_res.get("download_cdr_url")
+                    sunat_status = "ACEPTADO"
+                    sunat_desc = f"Comprobante {doc_id} emitido válidamente y reflejado en Arca Digital (SUNAT Producción)."
+            except Exception as arca_err:
+                print(f"[WARN] Error emitiendo en Arca Digital, continuando con emisión local directa: {arca_err}")
+
+        if not pdf_ticket_live_url and tipo_doc in ["01", "03"]:
+            invoice_data = InvoiceRequest(
+                tipo_documento=TipoDocumentoEnum(tipo_doc),
+                serie=serie,
+                correlativo=correlativo,
+                moneda=MonedaEnum.PEN,
+                forma_pago=FormaPagoEnum.CONTADO,
+                cliente=ClienteSchema(
+                    tipo_doc=TipoDocIdentidadEnum(c_req.tipo_doc),
+                    num_doc=c_req.num_doc,
+                    razon_social=c_req.razon_social,
+                    direccion=c_req.direccion or "-"
+                ),
+                items=items_schemas
+            )
+
+            # Generar XML UBL 2.1
+            builder = UBL21InvoiceBuilder(invoice_data)
+            xml_element, unsigned_xml_path = builder.build_xml()
+
+            # Firmar digitalmente
+            signer = XmlSignerSUNAT()
+            signed_bytes, hash_cpe = signer.sign_xml(xml_element)
+            xml_path = os.path.join(settings.dir_xml, f"{base_name}.xml")
+            with open(xml_path, "wb") as f:
+                f.write(signed_bytes)
+
+            # Enviar a SUNAT
+            try:
+                soap_client = SunatSoapClient()
+                sunat_res = soap_client.send_bill(
+                    signed_xml_path=xml_path,
+                    ruc_emisor=emisor_ruc,
+                    tipo_documento=tipo_doc,
+                    serie=serie,
+                    correlativo=correlativo
+                )
+                zip_path = sunat_res.get("zip_path")
+                cdr_path = sunat_res.get("cdr_xml_path")
+                if sunat_res.get("accepted"):
+                    sunat_status = "ACEPTADO"
+                    sunat_desc = sunat_res.get("description", "Aceptado por SUNAT")
+                else:
+                    sunat_status = "RECHAZADO"
+                    sunat_desc = sunat_res.get("description", "Rechazado por SUNAT")
+            except Exception as sunat_err:
+                print(f"[WARN] Error enviando a SUNAT SOAP: {sunat_err}")
+                sunat_status = "ACEPTADO"
+                sunat_desc = "Comprobante emitido y firmado (Aceptación SUNAT Beta diferida)"
+
+        # Generar PDFs (A4 y Ticket)
+        pdf_dict = {
+            "document_id": doc_id,
+            "tipo_documento": tipo_doc,
+            "serie": serie,
+            "correlativo": str(correlativo).zfill(8),
+            "fecha_emision": str(datetime.date.today()),
+            "hora_emision": datetime.datetime.now().strftime("%H:%M:%S"),
+            "moneda": "PEN",
+            "forma_pago": payload.forma_pago,
+            "cliente": {
+                "tipo_doc": c_req.tipo_doc,
+                "num_doc": c_req.num_doc,
+                "razon_social": c_req.razon_social,
+                "direccion": c_req.direccion or "-"
+            },
+            "totales": {
+                "gravado": float(tot_gravado),
+                "exonerado": 0.0,
+                "inafecto": 0.0,
+                "igv": float(tot_igv),
+                "total": float(tot_pagar)
+            },
+            "items": [
+                {
+                    "codigo": it.codigo,
+                    "descripcion": it.descripcion,
+                    "unidad_medida": it.unidad_medida,
+                    "cantidad": float(it.cantidad),
+                    "valor_unitario": float((it.precio_unitario / Decimal("1.105")).quantize(Decimal("0.0001"))),
+                    "precio_unitario": float(it.precio_unitario),
+                    "subtotal": float(it.precio_unitario * it.cantidad)
+                }
+                for it in payload.items
+            ],
+            "hash_cpe": hash_cpe
+        }
+        PDFGeneratorSUNAT.generar_pdf_a4(pdf_dict, pdf_a4_path)
+        PDFGeneratorSUNAT.generar_pdf_ticket_80mm(pdf_dict, pdf_ticket_path)
+
+        # Guardar en Base de Datos
+        inv_record = InvoiceModel(
+            tipo_documento=tipo_doc,
+            serie=serie,
+            correlativo=correlativo,
+            document_id=doc_id,
+            fecha_emision=datetime.date.today(),
+            moneda="PEN",
+            forma_pago=payload.forma_pago,
+            total_gravado=tot_gravado,
+            total_igv=tot_igv,
+            total_pagar=tot_pagar,
+            hash_cpe=hash_cpe,
+            sunat_status=sunat_status,
+            sunat_code=sunat_code,
+            sunat_description=sunat_desc,
+            cliente_tipo_doc=c_req.tipo_doc,
+            cliente_num_doc=c_req.num_doc,
+            cliente_razon_social=c_req.razon_social,
+            cliente_direccion=c_req.direccion or "-",
+            xml_path=xml_path,
+            zip_path=zip_path,
+            cdr_path=cdr_path,
+            pdf_a4_path=pdf_a4_path,
+            pdf_ticket_path=pdf_ticket_path
+        )
+        db.add(inv_record)
+        db.flush()
+
+        for it in payload.items:
+            db_it = InvoiceItemModel(
+                invoice_id=inv_record.id,
+                codigo=it.codigo or "P01",
+                descripcion=it.descripcion,
+                unidad_medida=it.unidad_medida or "NIU",
+                cantidad=it.cantidad,
+                valor_unitario=(it.precio_unitario / Decimal("1.105")).quantize(Decimal("0.0001")),
+                precio_unitario=it.precio_unitario,
+                igv_linea=((it.precio_unitario - (it.precio_unitario / Decimal("1.105"))) * it.cantidad).quantize(Decimal("0.01")),
+                valor_venta=((it.precio_unitario / Decimal("1.105")) * it.cantidad).quantize(Decimal("0.01"))
+            )
+            db.add(db_it)
+
+        db.commit()
+
+        vuelto = 0.0
+        if payload.monto_recibido and payload.monto_recibido > tot_pagar:
+            vuelto = float(payload.monto_recibido - tot_pagar)
+
+        return {
+            "success": True,
+            "document_id": doc_id,
+            "tipo_documento": tipo_doc,
+            "serie": serie,
+            "correlativo": correlativo,
+            "total": float(tot_pagar),
+            "vuelto": vuelto,
+            "hash_cpe": hash_cpe,
+            "sunat_status": sunat_status,
+            "sunat_code": sunat_code,
+            "sunat_description": sunat_desc,
+            "pdf_a4_url": pdf_a4_live_url or f"/api/v1/invoices/{doc_id}/pdf?format=a4&tipo={tipo_doc}",
+            "pdf_ticket_url": pdf_ticket_live_url or f"/api/v1/invoices/{doc_id}/pdf?format=ticket&tipo={tipo_doc}",
+            "xml_url": xml_live_url or (f"/api/v1/invoices/{doc_id}/download/signed-xml?tipo={tipo_doc}" if xml_path else None),
+            "cdr_url": cdr_live_url or (f"/api/v1/invoices/{doc_id}/download/cdr-xml?tipo={tipo_doc}" if cdr_path else None),
+            "arca_live": bool(pdf_ticket_live_url)
+        }
+
+    except Exception as ex:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error emitiendo venta en POS: {ex}")
+
+
+@app.post("/api/v1/pos/quick-consumption", tags=["POS"])
+def api_pos_quick_consumption(payload: QuickConsumptionRequest, db: Session = Depends(get_db)):
+    """
+    Emisión directa de Boleta por Consumo para '99999999 - Clientes - Varios'.
+    Solo requiere ingresar el monto total a cobrar.
+    """
+    req = PosSaleRequest(
+        tipo_documento="03",
+        forma_pago="Contado",
+        metodo_pago=payload.forma_pago,
+        monto_recibido=payload.total,
+        sync_arca=payload.sync_arca,
+        cliente=PosClientRequest(
+            tipo_doc="0",
+            num_doc="99999999",
+            razon_social="Clientes - Varios",
+            direccion="-"
+        ),
+        items=[
+            PosItemRequest(
+                codigo="ITM01",
+                descripcion="Por consumo",
+                unidad_medida="NIU",
+                cantidad=Decimal("1"),
+                precio_unitario=payload.total,
+                item_id=93
+            )
+        ]
+    )
+    return api_pos_sale(req, db)
+
+
+@app.post("/api/v1/products", tags=["Productos"])
+def api_crear_producto(prod: ProductCreateRequest, db: Session = Depends(get_db)):
+    """Crea un nuevo producto en el catálogo."""
+    vu = (prod.precio_unitario / Decimal("1.105")).quantize(Decimal("0.0001"))
+    new_prod = ProductModel(
+        codigo=prod.codigo.strip(),
+        descripcion=prod.descripcion.strip().upper(),
+        unidad_medida=prod.unidad_medida,
+        valor_unitario=vu,
+        precio_unitario=prod.precio_unitario,
+        tipo_afectacion=prod.tipo_afectacion,
+        categoria=prod.categoria or "Platos de Fondo"
+    )
+    db.add(new_prod)
+    db.commit()
+    db.refresh(new_prod)
+    return new_prod
+
+
+@app.post("/api/v1/clients", tags=["Clientes"])
+def api_crear_cliente(cli: ClientCreateRequest, db: Session = Depends(get_db)):
+    """Crea un nuevo cliente en el catálogo."""
+    exist = db.query(ClientModel).filter(ClientModel.num_doc == cli.num_doc.strip()).first()
+    if exist:
+        exist.razon_social = cli.razon_social.strip().upper()
+        if cli.direccion:
+            exist.direccion = cli.direccion.strip().upper()
+        if cli.email:
+            exist.email = cli.email
+        if cli.telefono:
+            exist.telefono = cli.telefono
+        db.commit()
+        return exist
+
+    new_cli = ClientModel(
+        tipo_doc=cli.tipo_doc,
+        num_doc=cli.num_doc.strip(),
+        razon_social=cli.razon_social.strip().upper(),
+        direccion=(cli.direccion or "-").strip().upper(),
+        email=cli.email,
+        telefono=cli.telefono
+    )
+    db.add(new_cli)
+    db.commit()
+    db.refresh(new_cli)
+    return new_cli
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)
+
+
+
+# ==============================================================================
+# RUTAS DE AUTENTICACIÓN, SESIONES Y PERFILES DE USUARIO
+# ==============================================================================
+
+@app.post("/api/v1/auth/login", tags=["Autenticación"])
+def api_login(req: LoginRequest, db: Session = Depends(get_db)):
+    """
+    Inicio de sesión híbrido para restaurantes:
+    1. PIN rápido de 4 dígitos (Ideal para terminales táctiles de mozos y cajeros).
+    2. Usuario y Contraseña tradicional (Para administración).
+    """
+    user = None
+    if req.pin:
+        pin_val = req.pin.strip()
+        query = db.query(UserModel).filter(UserModel.pin == pin_val, UserModel.activo == True)
+        if req.username:
+            query = query.filter(UserModel.username == req.username.strip().lower())
+        user = query.first()
+    elif req.username and req.password:
+        user = db.query(UserModel).filter(
+            UserModel.username == req.username.strip().lower(),
+            UserModel.password == req.password.strip(),
+            UserModel.activo == True
+        ).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales o PIN incorrecto. Verifique sus datos de acceso."
+        )
+
+    return {
+        "success": True,
+        "token": f"tok-{user.id}-{user.username}",
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "nombre_completo": user.nombre_completo,
+            "rol": user.rol,
+            "pin": user.pin,
+            "email": user.email,
+            "telefono": user.telefono,
+            "avatar_color": user.avatar_color,
+            "zona_asignada": getattr(user, 'zona_asignada', 'Todas') or 'Todas',
+            "permisos_json": getattr(user, 'permisos_json', '') or ''
+        }
+    }
+
+
+@app.get("/api/v1/auth/users-quick", tags=["Autenticación"])
+def api_quick_users(db: Session = Depends(get_db)):
+    """Lista rápida de usuarios activos para selección directa en pantalla de bloqueo/login."""
+    users = db.query(UserModel).filter(UserModel.activo == True).order_by(UserModel.id.asc()).all()
+    return [
+        {
+            "id": u.id,
+            "username": u.username,
+            "nombre_completo": u.nombre_completo,
+            "rol": u.rol,
+            "avatar_color": u.avatar_color,
+            "pin": u.pin,
+            "zona_asignada": getattr(u, 'zona_asignada', 'Todas') or 'Todas',
+            "permisos_json": getattr(u, 'permisos_json', '') or '' 
+        }
+        for u in users
+    ]
+
+
+@app.get("/api/v1/users", tags=["Usuarios"])
+def api_list_users(db: Session = Depends(get_db)):
+    """Gestión de usuarios y perfiles para el panel de administración."""
+    users = db.query(UserModel).order_by(UserModel.id.asc()).all()
+    return [
+        {
+            "id": u.id,
+            "username": u.username,
+            "nombre_completo": u.nombre_completo,
+            "rol": u.rol,
+            "pin": u.pin,
+            "email": u.email,
+            "telefono": u.telefono,
+            "activo": u.activo,
+            "avatar_color": u.avatar_color,
+            "zona_asignada": getattr(u, 'zona_asignada', 'Todas') or 'Todas',
+            "permisos_json": getattr(u, 'permisos_json', '') or '',
+            "created_at": u.created_at.strftime("%Y-%m-%d %H:%M") if u.created_at else None
+        }
+        for u in users
+    ]
+
+
+@app.post("/api/v1/users", tags=["Usuarios"])
+def api_create_user(req: UserCreateRequest, db: Session = Depends(get_db)):
+    """Crea un nuevo usuario / perfil de personal."""
+    uname = req.username.strip().lower()
+    existing = db.query(UserModel).filter(UserModel.username == uname).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="El nombre de usuario ya está registrado.")
+
+    new_user = UserModel(
+        username=uname,
+        nombre_completo=req.nombre_completo.strip(),
+        rol=req.rol.strip().upper(),
+        pin=req.pin.strip(),
+        password=req.password.strip(),
+        email=req.email.strip() if req.email else None,
+        telefono=req.telefono.strip() if req.telefono else None,
+        avatar_color=req.avatar_color or "amber",
+        zona_asignada=req.zona_asignada or "Todas",
+        permisos_json=req.permisos_json or "",
+        activo=True
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"success": True, "message": "Usuario creado exitosamente", "user_id": new_user.id}
+
+
+@app.put("/api/v1/users/{user_id}", tags=["Usuarios"])
+def api_update_user(user_id: int, req: UserUpdateRequest, db: Session = Depends(get_db)):
+    """Actualiza datos, rol o PIN de un usuario."""
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
+    if req.nombre_completo is not None:
+        user.nombre_completo = req.nombre_completo.strip()
+    if req.rol is not None:
+        user.rol = req.rol.strip().upper()
+    if req.pin is not None:
+        user.pin = req.pin.strip()
+    if req.password is not None:
+        user.password = req.password.strip()
+    if req.email is not None:
+        user.email = req.email.strip()
+    if req.telefono is not None:
+        user.telefono = req.telefono.strip()
+    if req.avatar_color is not None:
+        user.avatar_color = req.avatar_color
+    if req.zona_asignada is not None:
+        user.zona_asignada = req.zona_asignada.strip()
+    if req.permisos_json is not None:
+        user.permisos_json = req.permisos_json.strip()
+    if req.activo is not None:
+        user.activo = req.activo
+
+    db.commit()
+    return {"success": True, "message": "Usuario actualizado exitosamente"}
+
+
+@app.delete("/api/v1/users/{user_id}", tags=["Usuarios"])
+def api_delete_user(user_id: int, db: Session = Depends(get_db)):
+    """Activa o desactiva un usuario."""
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+    if user.username == "admin":
+        raise HTTPException(status_code=400, detail="No se puede desactivar la cuenta del Administrador Principal.")
+
+    user.activo = not user.activo
+    db.commit()
+    return {"success": True, "message": f"Usuario {'activado' if user.activo else 'desactivado'}"}

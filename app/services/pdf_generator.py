@@ -73,6 +73,7 @@ class PDFGeneratorSUNAT:
             "03": "BOLETA DE VENTA ELECTRÓNICA",
             "07": "NOTA DE CRÉDITO ELECTRÓNICA",
             "08": "NOTA DE DÉBITO ELECTRÓNICA",
+            "NV": "NOTA DE VENTA",
         }
         return mapping.get(tipo_documento, "COMPROBANTE ELECTRÓNICO")
 
@@ -191,7 +192,7 @@ class PDFGeneratorSUNAT:
             pdf.set_fill_color(250, 250, 250) if fill_row else pdf.set_fill_color(255, 255, 255)
             cantidad = Decimal(str(item["cantidad"]))
             v_unit = Decimal(str(item["valor_unitario"]))
-            p_unit = Decimal(str(item.get("precio_unitario") or (v_unit * Decimal("1.18"))))
+            p_unit = Decimal(str(item.get("precio_unitario") or (v_unit * Decimal("1.105"))))
             v_venta = (cantidad * v_unit).quantize(Decimal("0.01"))
             igv_line = (v_venta * Decimal("0.18")).quantize(Decimal("0.01"))
             p_total = (v_venta + igv_line).quantize(Decimal("0.01"))
@@ -322,7 +323,7 @@ class PDFGeneratorSUNAT:
         for item in invoice_data["items"]:
             cant = Decimal(str(item["cantidad"]))
             v_unit = Decimal(str(item["valor_unitario"]))
-            p_unit = Decimal(str(item.get("precio_unitario") or (v_unit * Decimal("1.18"))))
+            p_unit = Decimal(str(item.get("precio_unitario") or (v_unit * Decimal("1.105"))))
             p_total = (cant * p_unit).quantize(Decimal("0.01"))
             total_pagar += p_total
 
@@ -341,21 +342,36 @@ class PDFGeneratorSUNAT:
         pdf.set_font("helvetica", "", 6)
         pdf.multi_cell(72, 3, monto_en_letras(total_pagar, invoice_data.get("moneda", "PEN")), align="C")
 
-        # QR y Hash
-        qr_buf = generar_qr_sunat(
-            ruc_emisor=emisor_ruc,
-            tipo_documento=invoice_data["tipo_documento"],
-            serie=serie,
-            correlativo=correlativo,
-            igv=total_pagar * Decimal("0.18"),
-            total=total_pagar,
-            fecha_emision=str(invoice_data.get("fecha_emision", "2026-10-23")),
-            tipo_doc_cliente=cliente["tipo_doc"],
-            num_doc_cliente=cliente["num_doc"],
-            hash_cpe=invoice_data.get("hash_cpe", "")
-        )
-        pdf.image(qr_buf, x=26, y=pdf.get_y() + 1, w=28)
-        pdf.set_y(pdf.get_y() + 30)
+        # QR y Pie según tipo de documento
+        if invoice_data["tipo_documento"] == "NV":
+            pdf.ln(2)
+            pdf.set_font("helvetica", "B", 8)
+            pdf.cell(72, 4, "*** NOTA DE VENTA INTERNA ***", align="C", ln=True)
+            pdf.set_font("helvetica", "", 6)
+            pdf.cell(72, 3, "DOCUMENTO DE CONTROL INTERNO", align="C", ln=True)
+            pdf.cell(72, 3, "No v\u00e1lido para efecto tributario SUNAT", align="C", ln=True)
+            pdf.cell(72, 3, "\u00a1Gracias por su preferencia!", align="C", ln=True)
+        else:
+            # QR y Hash CPE oficial SUNAT (10.5% IGV Restaurantes)
+            igv_val = total_pagar - (total_pagar / Decimal("1.105"))
+            qr_buf = generar_qr_sunat(
+                ruc_emisor=emisor_ruc,
+                tipo_documento=invoice_data["tipo_documento"],
+                serie=serie,
+                correlativo=correlativo,
+                igv=igv_val,
+                total=total_pagar,
+                fecha_emision=str(invoice_data.get("fecha_emision", "2026-10-23")),
+                tipo_doc_cliente=cliente["tipo_doc"],
+                num_doc_cliente=cliente["num_doc"],
+                hash_cpe=invoice_data.get("hash_cpe", "")
+            )
+            pdf.image(qr_buf, x=26, y=pdf.get_y() + 1, w=28)
+            pdf.set_y(pdf.get_y() + 30)
+            pdf.set_font("helvetica", "B", 6)
+            pdf.cell(72, 3, "Representaci\u00f3n Impresa de Comprobante Electr\u00f3nico", align="C", ln=True)
+            pdf.set_font("helvetica", "", 5)
+            pdf.cell(72, 3, "Consulte su comprobante en www.sunat.gob.pe", align="C", ln=True)
 
         pdf.set_font("helvetica", "", 5)
         pdf.cell(72, 3, f"Hash: {invoice_data.get('hash_cpe', '-')}", align="C", ln=True)

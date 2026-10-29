@@ -292,6 +292,228 @@ class ArcaDigitalScraper:
         logger.info(f"Sincronización completada: {counts}")
         return counts
 
+    def emit_document_in_arca(
+        self,
+        document_type_id: str,
+        customer_doc: str,
+        customer_name: str,
+        items: List[Dict[str, Any]],
+        payment_method_id: str = "01",
+        payment_amount: Optional[float] = None
+    ) -> Dict[str, Any]:
+        """
+        Emite un comprobante directamente en el facturador Arca Digital (sombrero.arca.digital).
+        El comprobante es procesado y enviado a SUNAT por Arca Digital, obteniendo validez legal real.
+        """
+        import datetime
+        self.ensure_session()
+
+        # 1. Obtener CSRF Token de sesión activa
+        dash_resp = self.session.get(f"{self.base_url}/dashboard")
+        csrf_match = re.search(r'name=["\']csrf-token["\'].*?content=["\']([^"\']+)["\']', dash_resp.text)
+        if not csrf_match:
+            self.login()
+            dash_resp = self.session.get(f"{self.base_url}/dashboard")
+            csrf_match = re.search(r'name=["\']csrf-token["\'].*?content=["\']([^"\']+)["\']', dash_resp.text)
+
+        csrf_token = csrf_match.group(1) if csrf_match else ""
+
+        # 2. Resolver series_id: 1 para Factura (F001), 2 para Boleta (B001)
+        series_id = 1 if document_type_id == "01" else 2
+
+        # 3. Resolver customer_id
+        customer_id = 1  # Por defecto: 99999999 - Clientes - Varios
+        if customer_doc and customer_doc not in ["99999999", "00000000", "0"]:
+            try:
+                search_url = f"{self.base_url}/documents/search/customers?input={customer_doc}"
+                s_res = self.session.get(search_url, headers={
+                    "X-CSRF-TOKEN": csrf_token,
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
+                })
+                if s_res.status_code == 200:
+                    cust_list = s_res.json().get("customers", [])
+                    if cust_list:
+                        customer_id = cust_list[0]["id"]
+            except Exception as e:
+                logger.warning(f"No se pudo buscar cliente en Arca: {e}")
+
+        # 4. Formatear Ítems y Calcular Totales (IGV Restaurante 10.5% o Ley 31556)
+        # Obtener mapeo rápido del catálogo de Arca para asegurar IDs correctos
+        arca_items_map = {}
+        try:
+            raw_catalog = self.get_items()
+            for r_it in raw_catalog:
+                if r_it.get("descripcion"):
+                    arca_items_map[r_it["descripcion"].strip().upper()] = r_it["id"]
+                if r_it.get("codigo"):
+                    arca_items_map[str(r_it["codigo"]).strip().upper()] = r_it["id"]
+        except Exception as e:
+            logger.warning(f"No se pudo cargar mapeo de catálogo de Arca: {e}")
+
+        total = 0.0
+        items_payload = []
+        for it in items:
+            pu = float(it.get("precio_unitario", 0))
+            cant = float(it.get("cantidad", 1))
+            line_tot = round(pu * cant, 2)
+            total += line_tot
+
+            unit_val = round(pu / 1.105, 4)
+            line_val = round(unit_val * cant, 2)
+            line_igv = round(line_tot - line_val, 2)
+
+            item_id = it.get("item_id")
+            if not item_id:
+                desc_key = it.get("descripcion", "").strip().upper()
+                code_key = str(it.get("codigo", "")).strip().upper()
+                if desc_key in arca_items_map:
+                    item_id = arca_items_map[desc_key]
+                elif code_key in arca_items_map:
+                    item_id = arca_items_map[code_key]
+                elif "CONSUMO" in desc_key:
+                    item_id = 93
+                else:
+                    item_id = 93  # Default al ítem "Por consumo" si es plato nuevo/personalizado
+
+            items_payload.append({
+                "item_id": item_id,
+                "item": {
+                    "description": it.get("descripcion"),
+                    "item_type_id": "01",
+                    "internal_id": it.get("codigo", "P01"),
+                    "item_code": "",
+                    "unit_type_id": it.get("unidad_medida", "NIU"),
+                    "currency_type_id": "PEN",
+                    "id": item_id,
+                    "sale_unit_price": pu,
+                    "has_igv": True,
+                    "sale_affectation_igv_type_id": "10"
+                },
+                "quantity": cant,
+                "unit_value": unit_val,
+                "affectation_igv_type_id": "10",
+                "total_base_igv": line_val,
+                "percentage_igv": 10.5,
+                "total_igv": line_igv,
+                "total_taxes": line_igv,
+                "price_type_id": "01",
+                "unit_price": pu,
+                "total_value": line_val,
+                "total": line_tot
+            })
+
+        total = round(total, 2)
+        total_taxed = round(total / 1.105, 2)
+        total_igv = round(total - total_taxed, 2)
+        today = str(datetime.date.today())
+        now_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+        # 5. Armar Payload para Facturador PRO
+        payload = {
+            "prefix": "F" if document_type_id == "01" else "B",
+            "series_id": series_id,
+            "document_type_id": document_type_id,
+            "establishment_id": 1,
+            "customer_id": customer_id,
+            "operation_type_id": "0101",
+            "number": "#",
+            "date_of_issue": today,
+            "time_of_issue": now_time,
+            "date_of_due": today,
+            "currency_type_id": "PEN",
+            "exchange_rate_sale": 1,
+            "total_prepayment": 0,
+            "total_charge": 0,
+            "total_discount": 0,
+            "total_exportation": 0,
+            "total_free": 0,
+            "total_taxed": total_taxed,
+            "total_unaffected": 0,
+            "total_exonerated": 0,
+            "total_igv": total_igv,
+            "total_base_isc": 0,
+            "total_isc": 0,
+            "total_base_other_taxes": 0,
+            "total_other_taxes": 0,
+            "total_taxes": total_igv,
+            "total_value": total_taxed,
+            "total": total,
+            "items": items_payload,
+            "charges": [],
+            "discounts": [],
+            "attributes": [],
+            "guides": [],
+            "additional_information": None,
+            "actions": {
+                "format_pdf": "ticket"
+            },
+            "payments": [
+                {
+                    "id": None,
+                    "document_id": None,
+                    "date_of_payment": today,
+                    "payment_method_type_id": payment_method_id,
+                    "payment_destination_id": "cash",
+                    "reference": None,
+                    "payment": payment_amount or total
+                }
+            ]
+        }
+
+        # 6. Realizar POST /documents en Arca Digital
+        logger.info(f"Emitiendo documento {document_type_id} en Arca Digital para cliente {customer_id} por S/ {total}...")
+        resp = self.session.post(
+            f"{self.base_url}/documents",
+            json=payload,
+            headers={
+                "X-CSRF-TOKEN": csrf_token,
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        )
+
+        if resp.status_code != 200:
+            logger.error(f"Error emitiendo en Arca Digital ({resp.status_code}): {resp.text}")
+            return {
+                "success": False,
+                "error": resp.text
+            }
+
+        res_data = resp.json()
+        doc_id = res_data.get("data", {}).get("id")
+        number_full = res_data.get("data", {}).get("number_full")
+        ticket_url = res_data.get("links", {}).get("print_ticket")
+
+        # 7. Obtener detalles completos del registro
+        pdf_url = None
+        xml_url = None
+        cdr_url = None
+        if doc_id:
+            try:
+                rec_resp = self.session.get(f"{self.base_url}/documents/record/{doc_id}")
+                if rec_resp.status_code == 200:
+                    d_info = rec_resp.json().get("data", {})
+                    pdf_url = d_info.get("download_pdf")
+                    xml_url = d_info.get("download_xml")
+                    cdr_url = d_info.get("download_cdr")
+            except Exception as e:
+                logger.warning(f"No se pudo obtener record completo: {e}")
+
+        logger.info(f"¡Comprobante {number_full} emitido exitosamente en Arca Digital!")
+        return {
+            "success": True,
+            "id": doc_id,
+            "number_full": number_full,
+            "total": total,
+            "print_ticket_url": ticket_url,
+            "download_pdf_url": pdf_url,
+            "download_xml_url": xml_url,
+            "download_cdr_url": cdr_url,
+            "response": res_data.get("data", {}).get("response")
+        }
+
     def run_playwright_browser_flow(self, headless: bool = True) -> Dict[str, Any]:
         """
         Automatización de navegador visual mediante Playwright:
