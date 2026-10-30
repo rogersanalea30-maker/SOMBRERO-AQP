@@ -768,7 +768,7 @@
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-100">
 
             <!-- TOPBAR (Exact Facturador PRO Header Style) -->
-            <header class="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between z-20 shadow-2xs">
+            <header class="h-16 bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 border-b border-blue-900/60 px-4 md:px-6 flex items-center justify-between z-20 shadow-md text-white">
                 <!-- Left: Toggle & Quick Action Pills -->
                 <div class="flex items-center space-x-3">
                     <button onclick="toggleSidebar()" class="text-slate-500 hover:text-slate-800 p-2 rounded-lg hover:bg-slate-100 transition" title="Colapsar menú">
@@ -882,18 +882,18 @@
 
                                 <!-- Category Pills (Todo Visible Sin Deslizar) -->
                                 <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-1.5 text-[11px] font-bold" id="category-pills">
-                                    <button onclick="setCategory('TODOS')" class="cat-pill active px-2 py-1.5 rounded-lg bg-brand-500 text-white shadow-2xs transition truncate text-center" title="Todos">Todos (A-Z)</button>
-                                    <button onclick="setCategory('Platos de Fondo')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Platos de Fondo">🍲 Fondos</button>
-                                    <button onclick="setCategory('Platos de Entrada')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Entradas">🥗 Entradas</button>
-                                    <button onclick="setCategory('Piqueos')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Piqueos">🥓 Piqueos</button>
-                                    <button onclick="setCategory('Pollos')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Pollos">🍗 Pollos</button>
-                                    <button onclick="setCategory('Trucha')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Trucha">🐟 Trucha</button>
-                                    <button onclick="setCategory('Almuerzos Semanales')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Almuerzos">📅 Almuerzos</button>
-                                    <button onclick="setCategory('Domingos y Feriados')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Domingos">☀️ Domingos</button>
-                                    <button onclick="setCategory('Porciones')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Porciones">🍚 Porciones</button>
-                                    <button onclick="setCategory('Bebidas')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Bebidas">🍺 Bebidas</button>
-                                    <button onclick="setCategory('Menú Infantil')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Infantil">🧒 Infantil</button>
-                                    <button onclick="setCategory('CONSUMO')" class="cat-pill px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-2xs transition truncate text-center" title="Por Consumo">⚡ Consumo</button>
+                                    <button onclick="setCategory('TODOS')" class="cat-pill active px-2.5 py-2 rounded-xl bg-blue-900 text-white shadow-xs transition truncate text-center" title="Todos los platos">Todos (A-Z)</button>
+                                    <button onclick="setCategory('Platos de Fondo')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Platos de Fondo">Fondos Criollos</button>
+                                    <button onclick="setCategory('Platos de Entrada')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Entradas">Entradas & Ocopas</button>
+                                    <button onclick="setCategory('Piqueos')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Piqueos">Piqueos Mixtos</button>
+                                    <button onclick="setCategory('Pollos')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Pollos">Pollos & Frituras</button>
+                                    <button onclick="setCategory('Trucha')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Trucha">Truchas & Pescados</button>
+                                    <button onclick="setCategory('Almuerzos Semanales')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Almuerzos">Almuerzos del Día</button>
+                                    <button onclick="setCategory('Domingos y Feriados')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Domingos">Domingos y Fiestas</button>
+                                    <button onclick="setCategory('Porciones')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Porciones">Guarniciones</button>
+                                    <button onclick="setCategory('Bebidas')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Bebidas">Bebidas & Chichas</button>
+                                    <button onclick="setCategory('Menú Infantil')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Infantil">Menú Infantil</button>
+                                    <button onclick="setCategory('CONSUMO')" class="cat-pill px-2.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-blue-50 hover:text-blue-900 shadow-2xs transition truncate text-center" title="Por Consumo">Consumo Abierto</button>
                                 </div>
                             </div>
 
@@ -922,19 +922,19 @@
                         <div class="lg:col-span-5 flex flex-col bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden h-[calc(100vh-8.5rem)]">
 
                             <!-- Active Table & Waiter Bar -->
-                            <div class="px-4 py-2.5 bg-amber-50/90 border-b border-amber-200/80 flex items-center justify-between">
+                            <div class="px-4 py-3 bg-gradient-to-r from-slate-900 to-indigo-950 text-white border-b border-indigo-900/60 flex items-center justify-between shadow-2xs">
                                 <div class="flex items-center space-x-2.5 truncate">
                                     <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-2xs flex-shrink-0" id="ticket-table-dot"></span>
                                     <div class="truncate">
                                         <div class="flex items-center space-x-1.5">
-                                            <span class="font-black text-sm text-slate-900 tracking-tight" id="ticket-table-name">MESA 01</span>
-                                            <span class="text-[10px] bg-amber-200/80 text-amber-900 px-1.5 py-0.5 rounded font-bold" id="ticket-table-zone">Salón Principal</span>
+                                            <span class="font-black text-sm text-white tracking-tight" id="ticket-table-name">MESA 01</span>
+                                            <span class="text-[10px] bg-blue-800/80 text-cyan-200 px-2 py-0.5 rounded font-bold" id="ticket-table-zone">Salón Principal</span>
                                         </div>
-                                        <span class="text-[11px] text-amber-800 font-semibold" id="ticket-table-status">🟢 Mesa Libre</span>
+                                        <span class="text-[11px] text-emerald-300 font-semibold" id="ticket-table-status">🟢 Mesa Libre</span>
                                     </div>
                                 </div>
-                                <button onclick="navigateView('tables')" class="bg-white hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold px-3 py-1.5 rounded-xl shadow-2xs transition flex items-center space-x-1.5 hover:scale-[1.02]">
-                                    <i class="fa-solid fa-table-cells-large text-amber-600"></i>
+                                <button onclick="navigateView('tables')" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold px-3 py-1.5 rounded-xl shadow-2xs transition flex items-center space-x-1.5 hover:scale-[1.02]">
+                                    <i class="fa-solid fa-table-cells-large text-cyan-300"></i>
                                     <span>Cambiar Mesa</span>
                                 </button>
                             </div>
@@ -1031,7 +1031,7 @@
                                 </div>
 
                                 <!-- Comanda de Cocina Button -->
-                                <button onclick="sendKitchenComanda()" id="btn-send-comanda" disabled class="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold text-xs flex items-center justify-center space-x-2 shadow-sm transition">
+                                <button onclick="sendKitchenComanda()" id="btn-send-comanda" disabled class="w-full py-2.5 px-3 rounded-xl bg-indigo-700 hover:bg-indigo-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold text-xs flex items-center justify-center space-x-2 shadow-sm transition">
                                     <i class="fa-solid fa-utensils text-amber-400"></i>
                                     <span>👨‍🍳 ENVIAR COMANDA A COCINA / BAR</span>
                                 </button>
@@ -1051,7 +1051,7 @@
                                         <i class="fa-solid fa-receipt text-amber-200"></i>
                                         <span>NOTA VENTA (Sin SUNAT)</span>
                                     </button>
-                                    <button onclick="openPaymentModal()" id="btn-pos-pay" disabled class="col-span-5 py-3 px-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/30 transition hover:scale-[1.02]" title="Cobrar y Emitir Comprobante (F10)">
+                                    <button onclick="openPaymentModal()" id="btn-pos-pay" disabled class="col-span-5 py-3 px-3 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-500 hover:to-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg shadow-cyan-600/25 transition hover:scale-[1.02]" title="Cobro Rápido y Facturación (F10)">
                                         <i class="fa-solid fa-check text-sm"></i>
                                         <span>✓ FACTURAR (F10)</span>
                                     </button>

@@ -1,42 +1,39 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<html lang="es" class="h-full bg-[#FAF8F5] text-slate-800">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Carta Digital de Platos & Productos | El Sombrero Arequipeño - InnovaFlow Perú</title>
-    
-    <!-- Data URI Favicon to avoid 404 or network hangs -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%230f172a'/%3E%3Cpath d='M25 50 C25 35 40 25 55 25 C70 25 80 38 80 50 C80 65 65 75 50 75 C35 75 25 65 25 50' fill='none' stroke='%2300d2ff' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='55' cy='45' r='6' fill='%23ff4757'/%3E%3C/svg%3E">
-    
+    <title>Carta Digital • El Sombrero Arequipeño | Picantería & Gastronomía Tradicional</title>
+
+    <!-- Meta Tags para WhatsApp / Redes Sociales (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="El Sombrero Arequipeño • Carta Digital Oficial">
+    <meta property="og:description" content="Descubre nuestros auténticos platos criollos, rocoto relleno, chicharrón, truchas y bebidas tradicionales. Consulta precios y pide por WhatsApp.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80">
+    <meta property="og:url" content="https://sombrero-aqp.vercel.app/carta">
+    <meta name="theme-color" content="#FAF8F5">
+
+    <!-- Favicon Data URI -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='25' fill='%231e3a8a'/%3E%3Cpath d='M25 50 C25 35 40 25 55 25 C70 25 80 38 80 50 C80 65 65 75 50 75 C35 75 25 65 25 50' fill='none' stroke='%2306b6d4' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='55' cy='45' r='6' fill='%23ef4444'/%3E%3C/svg%3E">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts: Plus Jakarta Sans -->
+    <!-- Google Fonts: Playfair Display + Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&display=swap" rel="stylesheet">
 
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            background-color: #FAF8F5;
         }
-        .font-serif-display { font-family: 'Playfair Display', serif; }
+        .font-serif-gourmet { font-family: 'Playfair Display', serif; }
         .custom-scroll::-webkit-scrollbar { display: none; }
         .custom-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-        .glass-header {
-            background: rgba(15, 23, 42, 0.90);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-card {
-            background: rgba(15, 23, 42, 0.72);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
         .dish-card-img {
             aspect-ratio: 16 / 10;
             object-fit: cover;
@@ -44,171 +41,160 @@
         }
         @media print {
             .no-print { display: none !important; }
-            body { background: white !important; color: black !important; }
+            body { background: white !important; }
         }
     </style>
 </head>
-<body class="h-full flex flex-col overflow-x-hidden bg-slate-950 text-slate-100 selection:bg-amber-500 selection:text-white">
+<body class="h-full flex flex-col overflow-x-hidden selection:bg-amber-600 selection:text-white">
 
-    <!-- Top Sticky Header: Mobile-Optimized with Crisp Inline SVG Logo -->
-    <header class="sticky top-0 z-40 glass-header px-3.5 py-2.5 sm:px-6 sm:py-3.5 shadow-xl">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Top Sticky Header: Warm Gourmet Aesthetic -->
+    <header class="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-stone-200/80 px-4 py-3 sm:px-6 shadow-xs">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
             
-            <!-- Brand & Restaurant Identity -->
-            <div class="flex items-center space-x-2.5 sm:space-x-3.5">
-                <!-- Inline SVG Logo: InnovaFlow Peru Emblem (Crisp vector, 0 latency, no 404) -->
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 p-1.5 border border-slate-700/80 shadow-md flex items-center justify-center flex-shrink-0">
-                    <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="hdrFlowCyan" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#00d2ff"/>
-                                <stop offset="100%" stop-color="#0066ff"/>
-                            </linearGradient>
-                            <linearGradient id="hdrFlowRed" x1="0%" y1="100%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#dc2626"/>
-                                <stop offset="100%" stop-color="#ff4757"/>
-                            </linearGradient>
-                        </defs>
-                        <!-- Infinity wave loop (I and F fusion) -->
-                        <path d="M 24 68 C 24 78, 36 84, 50 84 C 68 84, 82 70, 82 52 C 82 38, 72 30, 60 30 C 46 30, 38 40, 38 52 C 38 62, 46 68, 56 68 C 62 68, 68 64, 72 58" 
-                              fill="none" stroke="url(#hdrFlowCyan)" stroke-width="8" stroke-linecap="round"/>
-                        <path d="M 28 26 C 38 16, 58 14, 72 20 C 80 24, 84 32, 86 40" 
-                              fill="none" stroke="#6366f1" stroke-width="8" stroke-linecap="round"/>
-                        <path d="M 38 46 L 68 46" 
-                              fill="none" stroke="url(#hdrFlowCyan)" stroke-width="7" stroke-linecap="round"/>
-                        <circle cx="70" cy="24" r="5" fill="url(#hdrFlowRed)"/>
-                    </svg>
+            <!-- Restaurant Branding -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-900/10 border border-amber-900/20 p-2 flex items-center justify-center flex-shrink-0 text-amber-900">
+                    <i class="fa-solid fa-utensils text-lg"></i>
                 </div>
-
-                <!-- Text Branding -->
-                <div class="leading-tight">
-                    <div class="flex items-center space-x-1.5">
-                        <span class="text-xs sm:text-sm font-black text-white tracking-tight uppercase">El Sombrero Arequipeño</span>
-                        <span class="text-[9px] font-black bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1.5 py-0.5 rounded-md">Tradición</span>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-sm sm:text-base font-serif-gourmet font-bold text-stone-900 tracking-tight">El Sombrero Arequipeño</h1>
+                        <span class="text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded-full">Tradición</span>
                     </div>
-                    <div class="flex items-center space-x-1.5 text-[10px] text-slate-400">
-                        <span class="text-amber-400 font-bold">Carta Digital</span>
-                        <span>•</span>
-                        <span class="text-slate-400">Powered by <strong class="text-cyan-400 font-extrabold">InnovaFlow Perú</strong></span>
-                    </div>
+                    <p class="text-[11px] text-stone-500 font-medium">Carta Digital • Picantería & Sabor Arequipeño</p>
                 </div>
             </div>
 
-            <!-- Header Actions: Share & Search -->
-            <div class="flex items-center space-x-2">
-                <button onclick="shareMenuLink()" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/30 text-xs font-bold transition flex items-center space-x-1 shadow-xs">
-                    <i class="fa-solid fa-share-nodes text-xs"></i>
-                    <span class="hidden sm:inline">Compartir</span>
-                </button>
-                <button onclick="document.getElementById('carta-search').focus()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition border border-slate-700">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </div>
+            <!-- Header Share Button -->
+            <button onclick="shareMenuWhatsApp()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm active:scale-95">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span class="hidden sm:inline">Compartir Carta</span>
+            </button>
         </div>
     </header>
 
-    <!-- Daily Special Banner (Plato del Día) -->
-    <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-orange-600 px-4 py-2.5 text-white shadow-md">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-2 min-w-0">
-                <span class="text-base sm:text-lg flex-shrink-0">🍲</span>
+    <!-- Daily Special Culinary Banner -->
+    <div class="bg-gradient-to-r from-amber-700 via-stone-800 to-amber-900 text-stone-100 px-4 py-3 shadow-sm">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3 min-w-0">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm flex-shrink-0">
+                    🍲
+                </div>
                 <div class="min-w-0">
-                    <span class="text-[9px] font-black uppercase tracking-wider bg-black/25 px-1.5 py-0.2 rounded-full">Almuerzo Tradicional</span>
-                    <p class="text-xs sm:text-sm font-black truncate leading-tight">Caldo Blanco con Garbanzo & Lomo Criollo</p>
+                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-amber-300">Almuerzo Tradicional de Hoy</span>
+                    <p class="text-xs sm:text-sm font-serif-gourmet font-bold text-white truncate">Caldo Blanco Tradicional con Garbanzo & Lomo Criollo</p>
                 </div>
             </div>
-            <span class="text-xs sm:text-sm font-black font-mono bg-black/30 px-2.5 py-1 rounded-xl flex-shrink-0 ml-2">S/ 20.00</span>
+            <span class="text-xs sm:text-sm font-black font-mono bg-white/15 px-3 py-1 rounded-xl flex-shrink-0 ml-3 text-amber-200">S/ 20.00</span>
         </div>
     </div>
 
-    <!-- Sticky Horizontal Category Pills -->
-    <nav class="sticky top-[58px] sm:top-[68px] z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800/80 px-3 py-2 sm:px-6 shadow-sm overflow-x-auto custom-scroll flex items-center space-x-2" id="category-pills">
-        <button onclick="filterCategory('TODOS')" class="cat-pill active px-3.5 py-1.5 rounded-xl bg-amber-500 text-white text-xs font-extrabold whitespace-nowrap shadow-xs transition">
-            🌟 Todos (<span id="total-badge-count">113</span>)
+    <!-- Sticky Category Filter Pills (Clean Text & Clean Badges) -->
+    <nav class="sticky top-[61px] z-30 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-stone-200/80 px-4 py-2.5 sm:px-6 shadow-xs overflow-x-auto custom-scroll flex items-center space-x-2" id="category-pills">
+        <button onclick="filterCategory('TODOS')" class="cat-pill active px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-bold whitespace-nowrap shadow-xs transition">
+            Todos los Platos (<span id="total-badge-count">113</span>)
         </button>
-        <button onclick="filterCategory('Platos de Fondo')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-xs font-bold whitespace-nowrap transition border border-slate-700/60">
-            🥩 Criollos & Fondos
+        <button onclick="filterCategory('Platos de Fondo')" class="cat-pill px-4 py-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold whitespace-nowrap transition border border-stone-200 shadow-2xs">
+            Fondos Criollos
         </button>
-        <button onclick="filterCategory('Pollos')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-xs font-bold whitespace-nowrap transition border border-slate-700/60">
-            🍗 Pollos & Frituras
+        <button onclick="filterCategory('Pollos')" class="cat-pill px-4 py-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold whitespace-nowrap transition border border-stone-200 shadow-2xs">
+            Pollos & Frituras
         </button>
-        <button onclick="filterCategory('Trucha')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-xs font-bold whitespace-nowrap transition border border-slate-700/60">
-            🐟 Truchas & Pescados
+        <button onclick="filterCategory('Trucha')" class="cat-pill px-4 py-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold whitespace-nowrap transition border border-stone-200 shadow-2xs">
+            Truchas & Pescados
         </button>
-        <button onclick="filterCategory('Piqueos')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-xs font-bold whitespace-nowrap transition border border-slate-700/60">
-            🍟 Piqueos Mixtos
+        <button onclick="filterCategory('Piqueos')" class="cat-pill px-4 py-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold whitespace-nowrap transition border border-stone-200 shadow-2xs">
+            Piqueos & Guarniciones
         </button>
-        <button onclick="filterCategory('Platos de Entrada')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-xs font-bold whitespace-nowrap transition border border-slate-700/60">
-            🥗 Entradas & Ocopas
+        <button onclick="filterCategory('Platos de Entrada')" class="cat-pill px-4 py-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold whitespace-nowrap transition border border-stone-200 shadow-2xs">
+            Entradas & Ocopas
         </button>
-        <button onclick="filterCategory('Bebidas')" class="cat-pill px-3.5 py-1.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-xs font-bold whitespace-nowrap transition border border-slate-700/60">
-            🍺 Bebidas & Chichas
+        <button onclick="filterCategory('Bebidas')" class="cat-pill px-4 py-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold whitespace-nowrap transition border border-stone-200 shadow-2xs">
+            Bebidas & Chichas
         </button>
     </nav>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-3.5 sm:p-6 space-y-4">
+    <!-- Main Dish Catalog -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-5">
         
-        <!-- Search Input -->
+        <!-- Search Bar -->
         <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-sm"></i>
-            <input type="text" id="carta-search" oninput="renderDishes()" placeholder="Buscar plato, caldo, trucha, chicha o postre..." class="w-full pl-11 pr-4 py-2.5 sm:py-3 bg-slate-900 border border-slate-800 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm transition">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-stone-400 text-sm"></i>
+            <input type="text" id="carta-search" oninput="renderDishes()" placeholder="Buscar por plato, caldo, trucha o postre..." class="w-full pl-11 pr-4 py-3 bg-white border border-stone-200 rounded-2xl text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 text-sm shadow-xs transition">
         </div>
 
-        <!-- Filter Tag Indicator -->
-        <div class="flex items-center justify-between text-xs text-slate-400 px-1">
-            <span>Mostrando: <strong id="filter-status-label" class="text-amber-400">Todos los platos</strong></span>
+        <!-- Filter Count -->
+        <div class="flex items-center justify-between text-xs text-stone-500 px-1">
+            <span>Sección: <strong id="filter-status-label" class="text-stone-900">Todos los Platos</strong></span>
             <span id="filtered-count-label">113 productos</span>
         </div>
 
-        <!-- Dish Cards Grid -->
-        <div id="dish-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5">
-            <!-- Rendered immediately from fallback data, then updated by API -->
+        <!-- Dish Cards Grid: Warm Gourmet Cards -->
+        <div id="dish-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Rendered instantly via JavaScript -->
         </div>
 
     </main>
 
-    <!-- Bottom Dish Detail Sheet (Modal on Mobile) -->
-    <div id="modal-dish-detail" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
-        <div class="bg-slate-900 border border-slate-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] animate-slide-up">
-            <!-- Modal Header / Image -->
-            <div class="relative h-56 sm:h-64 w-full bg-slate-950">
+    <!-- Floating WhatsApp Bar -->
+    <div class="fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto no-print">
+        <div class="bg-stone-900/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-stone-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-lg">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold block leading-tight">¿Deseas hacer un pedido?</span>
+                    <span class="text-[10px] text-stone-300">Escríbenos directamente para mesa o llevar</span>
+                </div>
+            </div>
+            <a href="https://wa.me/?text=Hola%20El%20Sombrero%20Arequipeño,%20estoy%20revisando%20su%20carta%20digital%20y%20deseo%20hacer%20un%20pedido." target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm">
+                Pedir Aquí
+            </a>
+        </div>
+    </div>
+
+    <!-- Dish Detail Sheet (Modal) -->
+    <div id="modal-dish-detail" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
+        <div class="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[88vh] animate-slide-up">
+            <!-- Modal Image Header -->
+            <div class="relative h-60 sm:h-64 w-full bg-stone-100">
                 <img id="detail-img" src="" alt="Plato" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-black/40"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-black/30"></div>
                 
-                <button onclick="closeDishDetail()" class="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/90 transition">
+                <button onclick="closeDishDetail()" class="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm text-stone-800 flex items-center justify-center hover:bg-white transition shadow-md">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
 
-                <div class="absolute bottom-3 left-4 right-4">
-                    <span id="detail-category" class="bg-amber-500/90 text-slate-950 font-black text-[10px] uppercase px-2 py-0.5 rounded-full">Plato Tradicional</span>
-                    <h2 id="detail-title" class="text-lg sm:text-xl font-extrabold text-white mt-1 leading-tight">Nombre del Plato</h2>
+                <div class="absolute bottom-4 left-5 right-5">
+                    <span id="detail-category" class="bg-amber-100 text-amber-900 border border-amber-200 font-bold text-[10px] uppercase px-2.5 py-0.5 rounded-full">Plato Tradicional</span>
+                    <h2 id="detail-title" class="text-xl sm:text-2xl font-serif-gourmet font-bold text-white mt-1 leading-snug drop-shadow-md">Nombre del Plato</h2>
                 </div>
             </div>
 
             <!-- Modal Body -->
-            <div class="p-5 space-y-4 overflow-y-auto">
-                <div class="flex items-center justify-between bg-slate-800/60 p-3 rounded-2xl border border-slate-700/60">
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <div class="flex items-center justify-between bg-stone-50 p-3.5 rounded-2xl border border-stone-200">
                     <div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Precio Carta</span>
-                        <span id="detail-price" class="text-2xl font-black font-mono text-amber-400">S/ 0.00</span>
+                        <span class="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">Precio Carta</span>
+                        <span id="detail-price" class="text-2xl font-black font-mono text-stone-900">S/ 0.00</span>
                     </div>
-                    <span class="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-xl">
-                        <i class="fa-solid fa-check-circle mr-1"></i>Disponible Hoy
+                    <span class="text-xs text-emerald-700 font-bold bg-emerald-100/80 border border-emerald-200 px-3 py-1 rounded-xl">
+                        <i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i>Disponible Hoy
                     </span>
                 </div>
 
                 <div class="space-y-1">
-                    <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Descripción & Preparación</h4>
-                    <p id="detail-description" class="text-xs text-slate-400 leading-relaxed">
-                        Elaborado con insumos frescos de la campiña arequipeña, siguiendo la receta tradicional de antaño con cocción lenta y aderezo especial de la casa.
+                    <h4 class="text-xs font-bold text-stone-800 uppercase tracking-wider">Receta & Tradición</h4>
+                    <p id="detail-description" class="text-xs text-stone-600 leading-relaxed">
+                        Elaborado con insumos selectos de la campiña arequipeña, siguiendo la sazón ancestral de antaño con cocción lenta y aderezo artesanal de la casa.
                     </p>
                 </div>
 
-                <div class="pt-2">
-                    <a id="detail-whatsapp-btn" href="#" target="_blank" class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg transition">
-                        <i class="fa-brands fa-whatsapp text-base"></i>
-                        <span>Pedir este plato por WhatsApp</span>
+                <div class="pt-2 flex space-x-2">
+                    <a id="detail-whatsapp-btn" href="#" target="_blank" class="flex-1 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-md transition">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Pedir por WhatsApp</span>
                     </a>
                 </div>
             </div>
@@ -216,20 +202,15 @@
     </div>
 
     <!-- Footer -->
-    <footer class="glass-header mt-8 px-4 py-6 text-center text-xs text-slate-400 space-y-2 no-print">
-        <div class="flex items-center justify-center space-x-2 text-white font-bold">
-            <span class="text-amber-400">El Sombrero Arequipeño</span>
-            <span>•</span>
-            <span class="text-cyan-400 font-black">InnovaFlow Perú</span>
-        </div>
-        <p class="text-[11px] text-slate-500 max-w-md mx-auto">
-            Gastronomía típica & Picantería Arequipeña. Facturación electrónica y carta virtual 100% digital sin contacto.
+    <footer class="mt-16 mb-20 px-4 py-8 text-center text-xs text-stone-500 space-y-2 border-t border-stone-200/80 no-print">
+        <p class="font-serif-gourmet font-bold text-stone-800 text-sm">El Sombrero Arequipeño</p>
+        <p class="text-[11px] text-stone-400 max-w-sm mx-auto">
+            Picantería & Comida Típica Arequipeña. Precios expresados en Soles peruanos. Powered by InnovaFlow Perú.
         </p>
     </footer>
 
-    <!-- Instant Preload Dishes to Guarantee 0ms Rendering -->
+    <!-- Instant Preload Logic -->
     <script>
-        // High-priority initial dishes to display INSTANTLY without waiting for network API
         const fallbackProducts = [
             { codigo: 'P01', descripcion: 'ROCOTO RELLENO CON PASTEL DE PAPA', categoria: 'Platos de Fondo', precio_unitario: 35.00, imagen_url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80' },
             { codigo: 'P02', descripcion: 'CHICHARRON DE CHANCHO AREQUIPEÑO', categoria: 'Platos de Fondo', precio_unitario: 38.00, imagen_url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80' },
@@ -245,7 +226,13 @@
         let allProducts = [...fallbackProducts];
         let activeCategory = 'TODOS';
 
-        // Render immediately on load
+        // Check URL query param ?cat=Pollos
+        const urlParams = new URLSearchParams(window.location.search);
+        const catParam = urlParams.get('cat');
+        if (catParam) {
+            activeCategory = catParam;
+        }
+
         function renderDishes() {
             const container = document.getElementById('dish-grid');
             if (!container) return;
@@ -268,8 +255,8 @@
 
             if (filtered.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-slate-500 space-y-2">
-                        <i class="fa-solid fa-utensils text-3xl text-slate-600"></i>
+                    <div class="col-span-full py-12 text-center text-stone-400 space-y-2">
+                        <i class="fa-solid fa-utensils text-3xl text-stone-300"></i>
                         <p class="text-sm">No encontramos platos con ese nombre.</p>
                     </div>
                 `;
@@ -279,47 +266,47 @@
             container.innerHTML = filtered.map(p => {
                 const price = parseFloat(p.precio_unitario || 0).toFixed(2);
                 const img = p.imagen_url || 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80';
-                const safeDesc = p.descripcion.replace(/'/g, "\\'");
-                const safeCat = (p.categoria || 'Gastronomía').replace(/'/g, "\\'");
+                const safeDesc = p.descripcion.replace(/'/g, "\'");
+                const safeCat = (p.categoria || 'Tradicional').replace(/'/g, "\'");
+                const waDishMsg = encodeURIComponent(`¡Hola! Deseo pedir este plato de la carta: ${p.descripcion} (S/ ${price}).`);
 
                 return `
-                    <div onclick="openDishDetail('${safeDesc}', 'S/ ${price}', '${safeCat}', '${img}')" class="group relative rounded-3xl overflow-hidden glass-card border border-slate-800 hover:border-amber-500/80 transition-all duration-200 active:scale-98 flex flex-col justify-between cursor-pointer shadow-lg">
+                    <div class="group relative rounded-3xl overflow-hidden bg-white border border-stone-200/90 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between">
                         
-                        <!-- Food Photo -->
-                        <div class="relative dish-card-img bg-slate-900 overflow-hidden">
+                        <!-- Photo container -->
+                        <div onclick="openDishDetail('${safeDesc}', 'S/ ${price}', '${safeCat}', '${img}')" class="relative dish-card-img bg-stone-100 overflow-hidden cursor-pointer">
                             <img src="${img}" alt="${p.descripcion}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 
-                            <!-- Badges -->
-                            <div class="absolute top-2.5 left-2.5">
-                                <span class="bg-black/60 backdrop-blur-md text-[9px] font-black uppercase tracking-wider text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-400/30">
-                                    Disponible
-                                </span>
-                            </div>
-                            <div class="absolute top-2.5 right-2.5">
-                                <span class="bg-black/60 backdrop-blur-md text-[9px] font-bold text-amber-300 px-2 py-0.5 rounded-full border border-amber-400/20">
-                                    ${p.categoria || 'Tradicional'}
+                            <!-- Top Badges -->
+                            <div class="absolute top-3 left-3">
+                                <span class="bg-white/90 backdrop-blur-sm text-[9px] font-bold uppercase tracking-wider text-stone-800 px-2 py-0.5 rounded-full shadow-xs">
+                                    ${p.categoria || 'Especialidad'}
                                 </span>
                             </div>
 
-                            <!-- Title over bottom of image -->
-                            <div class="absolute bottom-2 left-3 right-3">
-                                <h3 class="text-xs sm:text-sm font-black text-white leading-snug drop-shadow-md group-hover:text-amber-300 transition line-clamp-2">
+                            <!-- Title over image -->
+                            <div class="absolute bottom-2.5 left-3 right-3">
+                                <h3 class="text-xs sm:text-sm font-serif-gourmet font-bold text-white leading-tight drop-shadow-md line-clamp-2">
                                     ${p.descripcion}
                                 </h3>
                             </div>
                         </div>
 
-                        <!-- Price and Action -->
-                        <div class="p-3 flex items-center justify-between border-t border-slate-800/80 bg-slate-950/90">
+                        <!-- Card Footer -->
+                        <div class="p-3.5 flex items-center justify-between border-t border-stone-100 bg-white">
                             <div>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Precio</span>
-                                <span class="text-base sm:text-lg font-black font-mono text-amber-400">S/ ${price}</span>
+                                <span class="text-[9px] font-bold text-stone-400 uppercase tracking-wider block">Precio</span>
+                                <span class="text-base sm:text-lg font-black font-mono text-stone-900">S/ ${price}</span>
                             </div>
-                            <button class="px-3 py-1.5 rounded-xl bg-amber-500/15 group-hover:bg-amber-500 text-amber-400 group-hover:text-white border border-amber-500/30 font-bold text-xs transition flex items-center space-x-1">
-                                <span>Ver</span>
-                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                            </button>
+                            <div class="flex items-center space-x-1.5">
+                                <a href="https://wa.me/?text=${waDishMsg}" target="_blank" class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition flex items-center justify-center text-sm shadow-2xs" title="Pedir por WhatsApp">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </a>
+                                <button onclick="openDishDetail('${safeDesc}', 'S/ ${price}', '${safeCat}', '${img}')" class="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-900 text-stone-700 hover:text-white font-bold text-xs transition">
+                                    Ver
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -331,10 +318,10 @@
             document.querySelectorAll('.cat-pill').forEach(btn => {
                 const isMatch = (cat === 'TODOS' && btn.innerText.includes('Todos')) || btn.innerText.includes(cat);
                 btn.className = isMatch
-                    ? 'cat-pill active px-3.5 py-1.5 rounded-xl bg-amber-500 text-white text-xs font-extrabold whitespace-nowrap shadow-xs transition'
-                    : 'cat-pill px-3.5 py-1.5 rounded-xl bg-slate-800/80 text-slate-300 hover:text-white text-xs font-bold whitespace-nowrap transition border border-slate-700/60';
+                    ? 'cat-pill active px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-bold whitespace-nowrap shadow-xs transition'
+                    : 'cat-pill px-4 py-2 rounded-xl bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold whitespace-nowrap transition border border-stone-200 shadow-2xs';
             });
-            document.getElementById('filter-status-label').innerText = cat === 'TODOS' ? 'Todos los platos' : cat;
+            document.getElementById('filter-status-label').innerText = cat === 'TODOS' ? 'Todos los Platos' : cat;
             renderDishes();
         }
 
@@ -344,7 +331,7 @@
             document.getElementById('detail-category').innerText = category;
             document.getElementById('detail-img').src = img;
 
-            const waMsg = encodeURIComponent(`Hola El Sombrero Arequipeño! 👋 Deseo pedir: ${title} (${price}). ¿Está disponible para entrega o mesa?`);
+            const waMsg = encodeURIComponent(`Hola El Sombrero Arequipeño! 👋 Deseo consultar/pedir: ${title} (${price}). ¿Está disponible hoy?`);
             document.getElementById('detail-whatsapp-btn').href = `https://wa.me/?text=${waMsg}`;
 
             document.getElementById('modal-dish-detail').classList.remove('hidden');
@@ -354,22 +341,12 @@
             document.getElementById('modal-dish-detail').classList.add('hidden');
         }
 
-        function shareMenuLink() {
-            const url = window.location.href;
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Carta Digital - El Sombrero Arequipeño',
-                    text: 'Mira nuestra carta de platos típicos y bebidas:',
-                    url: url
-                }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('¡Enlace de la carta copiado al portapapeles!');
-                });
-            }
+        function shareMenuWhatsApp() {
+            const url = 'https://sombrero-aqp.vercel.app/carta';
+            const msg = encodeURIComponent(`¡Hola! Te comparto la Carta Digital de *El Sombrero Arequipeño* 🍲 con todos nuestros platos criollos, precios y fotos: ${url}`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
 
-        // Background loader for complete 113 products (never blocks UI)
         async function loadAllProducts() {
             try {
                 const res = await fetch('/api/v1/products');
@@ -382,13 +359,11 @@
                     }
                 }
             } catch (err) {
-                console.warn("Using offline product catalog:", err);
+                console.warn("Using offline fallback catalog:", err);
             }
         }
 
-        // Render immediately
         renderDishes();
-        // Load API in background
         loadAllProducts();
     </script>
 </body>
