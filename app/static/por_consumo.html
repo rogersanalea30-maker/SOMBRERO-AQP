@@ -127,30 +127,16 @@
                 </div>
             </div>
 
-            <!-- Input Monto Total -->
-            <div>
-                <label class="block text-xs font-black text-[#122b4f] uppercase tracking-wider mb-1.5 text-center">
+            <!-- Input Monto Total Grande y Espacioso -->
+            <div class="py-3">
+                <label class="block text-xs font-black text-[#122b4f] uppercase tracking-wider mb-2.5 text-center">
                     MONTO TOTAL A COBRAR (S/)
                 </label>
-                <div class="relative">
-                    <span class="absolute left-5 top-3 text-3xl font-black text-amber-700 font-mono">S/</span>
+                <div class="relative flex items-center">
+                    <span class="absolute left-6 text-4xl sm:text-5xl font-black text-amber-700 font-mono select-none pointer-events-none">S/</span>
                     <input type="number" step="0.50" id="quick-amount" placeholder="0.00" autofocus
-                        class="w-full text-center text-4xl font-black font-mono py-3.5 pl-14 pr-4 bg-white border-2 border-[#122b4f] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#122b4f]/15 text-[#122b4f] transition">
+                        class="w-full text-center text-5xl sm:text-6xl font-black font-mono py-7 sm:py-8 pl-16 pr-6 bg-slate-50/70 hover:bg-white focus:bg-white border-2 border-[#122b4f] rounded-3xl focus:outline-none focus:ring-4 focus:ring-[#122b4f]/15 text-[#122b4f] transition shadow-xs">
                 </div>
-            </div>
-
-            <!-- Montos Rápidos (Estilo limpio con borde azul según imagen 2) -->
-            <div class="grid grid-cols-5 gap-2 text-xs font-extrabold" id="quick-amounts-grid">
-                <button type="button" onclick="setAmount(20, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 20</button>
-                <button type="button" onclick="setAmount(23, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 23</button>
-                <button type="button" onclick="setAmount(35, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 35</button>
-                <button type="button" onclick="setAmount(46, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 46</button>
-                <button type="button" onclick="setAmount(50, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 50</button>
-                <button type="button" onclick="setAmount(80, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 80</button>
-                <button type="button" onclick="setAmount(100, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 100</button>
-                <button type="button" onclick="setAmount(150, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 150</button>
-                <button type="button" onclick="setAmount(200, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 200</button>
-                <button type="button" onclick="setAmount(250, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 250</button>
             </div>
 
             <!-- Método de Pago -->
@@ -201,33 +187,6 @@
     <script>
         let currentMethod = 'Efectivo';
         let currentClientType = 'VARIOS'; // Default 99999999 - Clientes - Varios
-
-        function setAmount(val, btn) {
-            document.getElementById('quick-amount').value = parseFloat(val).toFixed(2);
-            document.querySelectorAll('.amt-btn').forEach(b => {
-                b.classList.remove('bg-[#122b4f]', 'text-white');
-                b.classList.add('bg-white', 'text-[#122b4f]');
-            });
-            if (btn) {
-                btn.classList.remove('bg-white', 'text-[#122b4f]');
-                btn.classList.add('bg-[#122b4f]', 'text-white');
-            }
-        }
-
-        // Si el usuario escribe a mano en el monto, desmarcar botones activos
-        document.getElementById('quick-amount')?.addEventListener('input', function() {
-            const currentVal = parseFloat(this.value);
-            document.querySelectorAll('.amt-btn').forEach(b => {
-                const bVal = parseFloat(b.innerText.replace('S/', '').trim());
-                if (bVal === currentVal) {
-                    b.classList.remove('bg-white', 'text-[#122b4f]');
-                    b.classList.add('bg-[#122b4f]', 'text-white');
-                } else {
-                    b.classList.remove('bg-[#122b4f]', 'text-white');
-                    b.classList.add('bg-white', 'text-[#122b4f]');
-                }
-            });
-        });
 
         function setMethod(method, btn) {
             currentMethod = method;
@@ -434,10 +393,6 @@
                     }
 
                     amountInput.value = '';
-                    document.querySelectorAll('.amt-btn').forEach(b => {
-                        b.classList.remove('bg-[#122b4f]', 'text-white');
-                        b.classList.add('bg-white', 'text-[#122b4f]');
-                    });
                 } else {
                     statusCard.className = "p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-bold";
                     statusCard.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> ${data.detail || "Error al emitir el comprobante."}`;
@@ -492,10 +447,6 @@
             document.getElementById('input-ce').value = '';
             document.getElementById('input-ce-name').value = '';
             document.getElementById('reniec-status').classList.add('hidden');
-            document.querySelectorAll('.amt-btn').forEach(b => {
-                b.classList.remove('bg-[#122b4f]', 'text-white');
-                b.classList.add('bg-white', 'text-[#122b4f]');
-            });
             document.getElementById('quick-amount').focus();
         }
 
