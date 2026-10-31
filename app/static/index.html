@@ -3909,7 +3909,7 @@
                     showSuccessModal(data);
                     const autoPrint = document.getElementById('quick-auto-print') ? document.getElementById('quick-auto-print').checked : true;
                     if (autoPrint && data.pdf_ticket_url) {
-                        window.open(data.pdf_ticket_url, '_blank');
+                        printTicket80mm(data.pdf_ticket_url);
                     }
                     loadDocumentsHistory();
                     loadDashboardStats();
@@ -3968,11 +3968,38 @@
             document.getElementById('modal-success').classList.add('hidden');
         }
 
-        function printTicket80mm() {
-            if (!state.lastIssuedInvoice) return;
-            const ticketUrl = state.lastIssuedInvoice.pdf_ticket_url;
-            const w = window.open(ticketUrl, '_blank');
-            if (w) w.focus();
+        function printTicket80mm(customUrl) {
+            const url = customUrl || (state.lastIssuedInvoice ? state.lastIssuedInvoice.pdf_ticket_url : null);
+            if (!url) return;
+
+            // Disparo directo a la impresora usando iframe oculto
+            let iframe = document.getElementById('silent-print-iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'silent-print-iframe';
+                iframe.style.position = 'fixed';
+                iframe.style.right = '0';
+                iframe.style.bottom = '0';
+                iframe.style.width = '0';
+                iframe.style.height = '0';
+                iframe.style.border = '0';
+                document.body.appendChild(iframe);
+            }
+
+            iframe.onload = function() {
+                try {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } catch (e) {
+                    // Fallback para visores PDF externos
+                    const w = window.open(url, '_blank');
+                    if (w) {
+                        w.focus();
+                        w.onload = () => { try { w.print(); } catch(err){} };
+                    }
+                }
+            };
+            iframe.src = url;
         }
 
         // --------------------------------------------------------------------------
