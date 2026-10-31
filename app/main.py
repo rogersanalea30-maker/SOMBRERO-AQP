@@ -189,6 +189,15 @@ class DirectPrintRequest(BaseModel):
     ticket_url: str
     printer_name: Optional[str] = "EPSON TM-T20III Receipt"
 
+@app.options("/api/v1/printer/direct-print")
+def options_direct_print():
+    from fastapi.responses import Response
+    return Response(status_code=200, headers={
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "*"
+    })
+
 @app.post("/api/v1/printer/direct-print", tags=["Impresora Local"])
 def api_direct_print(payload: DirectPrintRequest):
     """
