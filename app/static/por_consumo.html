@@ -15,23 +15,23 @@
         .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
     </style>
 </head>
-<body class="min-h-full bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 flex flex-col justify-center items-center p-3 sm:p-6">
+<body class="min-h-full bg-[#0a192f] text-slate-100 flex flex-col justify-center items-center p-3 sm:p-6">
 
     <!-- Card Principal -->
-    <div class="w-full max-w-lg bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden animate-fade-in my-auto">
+    <div class="w-full max-w-lg bg-white text-[#122b4f] rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-fade-in my-auto">
         
         <!-- Header -->
-        <div class="p-5 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 text-white flex items-center justify-between">
+        <div class="p-5 bg-[#122b4f] text-white flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-xl shadow-xs">
+                <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-xl shadow-xs">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div>
                     <h1 class="text-base font-black tracking-tight leading-tight">Boleta por Consumo</h1>
-                    <p class="text-xs text-amber-100 font-medium">El Sombrero Arequipeño • Facturación SUNAT</p>
+                    <p class="text-xs text-slate-300 font-medium">El Sombrero Arequipeño • Facturación SUNAT</p>
                 </div>
             </div>
-            <a href="/" class="text-xs font-bold bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl transition flex items-center space-x-1.5">
+            <a href="/" class="text-xs font-bold bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-xl transition flex items-center space-x-1.5 text-white">
                 <i class="fa-solid fa-cash-register"></i>
                 <span>POS</span>
             </a>
@@ -43,38 +43,38 @@
             <!-- Selector de Cliente Receptor -->
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
-                    <label class="text-[11px] font-black text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
-                        <i class="fa-solid fa-user-tag text-amber-600"></i>
-                        <span>Cliente Receptor (Boleta)</span>
+                    <label class="text-[11px] font-black text-[#122b4f] uppercase tracking-wider flex items-center space-x-1.5">
+                        <i class="fa-solid fa-user-tag text-[#122b4f]"></i>
+                        <span>CLIENTE RECEPTOR (BOLETA)</span>
                     </label>
-                    <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 text-[10px] font-black">
+                    <span class="px-2.5 py-0.5 rounded-lg bg-[#eef2f6] text-[#122b4f] text-[10px] font-black">
                         SERIE B001
                     </span>
                 </div>
 
                 <!-- Tabs Tipo de Receptor: Clientes Varios / DNI / Carnet Extranjería -->
-                <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-2xl text-[11px] font-extrabold" id="client-type-tabs">
+                <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-extrabold" id="client-type-tabs">
                     <button type="button" onclick="setClientType('VARIOS')" id="tab-varios"
-                        class="client-tab active py-2 rounded-xl bg-white shadow-xs text-amber-700 transition flex items-center justify-center space-x-1">
+                        class="client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-transparent text-slate-500 hover:text-slate-800">
                         <i class="fa-solid fa-users"></i>
                         <span>Varios</span>
                     </button>
                     <button type="button" onclick="setClientType('DNI')" id="tab-dni"
-                        class="client-tab py-2 rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center space-x-1">
+                        class="client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-[#122b4f] text-[#122b4f] bg-white font-black shadow-xs">
                         <i class="fa-solid fa-id-card"></i>
                         <span>DNI (RENIEC)</span>
                     </button>
                     <button type="button" onclick="setClientType('CE')" id="tab-ce"
-                        class="client-tab py-2 rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center space-x-1">
+                        class="client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-transparent text-slate-500 hover:text-slate-800">
                         <i class="fa-solid fa-passport"></i>
                         <span>C. Extranjería</span>
                     </button>
                 </div>
 
                 <!-- Vista 1: Clientes Varios (Default) -->
-                <div id="view-client-varios" class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+                <div id="view-client-varios" class="hidden p-3 bg-slate-50 border-2 border-[#122b4f] rounded-2xl flex items-center justify-between">
                     <div class="space-y-0.5 truncate pr-2">
-                        <span class="font-extrabold text-sm text-slate-800 block truncate">99999999 - Clientes - Varios</span>
+                        <span class="font-extrabold text-sm text-[#122b4f] block truncate">99999999 - Clientes - Varios</span>
                         <span class="text-[11px] text-slate-500 block">Emisión sin documento individual • Concepto: <strong>POR CONSUMO</strong></span>
                     </div>
                     <span class="px-2.5 py-1 rounded-xl bg-slate-200 text-slate-700 text-[10px] font-black whitespace-nowrap">
@@ -83,102 +83,102 @@
                 </div>
 
                 <!-- Vista 2: DNI con Búsqueda RENIEC -->
-                <div id="view-client-dni" class="hidden space-y-2 p-3 bg-amber-50/50 border border-amber-200/80 rounded-2xl animate-fade-in">
+                <div id="view-client-dni" class="space-y-2 p-3 bg-white border-2 border-[#122b4f] rounded-2xl animate-fade-in">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                            Número de DNI (8 dígitos)
+                        <label class="block text-[10px] font-black text-[#122b4f] uppercase tracking-wider mb-1">
+                            NÚMERO DE DNI (8 DÍGITOS)
                         </label>
                         <div class="flex space-x-2">
                             <input type="text" id="input-dni" maxlength="8" placeholder="Ej: 72040673"
-                                class="flex-1 font-mono font-bold text-sm px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                                class="flex-1 font-mono font-bold text-sm px-3.5 py-2.5 bg-white border-2 border-[#122b4f] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#122b4f]/20 text-[#122b4f]">
                             <button type="button" onclick="buscarReniec()" id="btn-reniec"
-                                class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black transition flex items-center space-x-1.5 shrink-0">
+                                class="px-4 py-2.5 bg-[#122b4f] hover:bg-[#1b3d6b] text-white rounded-xl text-xs font-black transition flex items-center space-x-1.5 shrink-0">
                                 <i class="fa-solid fa-magnifying-glass" id="icon-reniec"></i>
                                 <span>Buscar RENIEC</span>
                             </button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                            Nombres y Apellidos
+                        <label class="block text-[10px] font-black text-[#122b4f] uppercase tracking-wider mb-1">
+                            NOMBRES Y APELLIDOS
                         </label>
                         <input type="text" id="input-dni-name" placeholder="Razón social o nombre completo..."
-                            class="w-full font-bold text-xs px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                            class="w-full font-bold text-xs px-3.5 py-2.5 bg-white border-2 border-[#122b4f] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#122b4f]/20 text-[#122b4f]">
                     </div>
-                    <div id="reniec-status" class="hidden text-[11px] font-bold flex items-center space-x-1"></div>
+                    <div id="reniec-status" class="hidden text-[11px] font-bold text-emerald-600 flex items-center space-x-1"></div>
                 </div>
 
                 <!-- Vista 3: Carnet de Extranjería -->
-                <div id="view-client-ce" class="hidden space-y-2 p-3 bg-amber-50/50 border border-amber-200/80 rounded-2xl animate-fade-in">
+                <div id="view-client-ce" class="hidden space-y-2 p-3 bg-white border-2 border-[#122b4f] rounded-2xl animate-fade-in">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                            N° Carnet de Extranjería
+                        <label class="block text-[10px] font-black text-[#122b4f] uppercase tracking-wider mb-1">
+                            N° CARNET DE EXTRANJERÍA
                         </label>
                         <input type="text" id="input-ce" maxlength="12" placeholder="N° Carnet..."
-                            class="w-full font-mono font-bold text-sm px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                            class="w-full font-mono font-bold text-sm px-3.5 py-2.5 bg-white border-2 border-[#122b4f] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#122b4f]/20 text-[#122b4f]">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                            Nombres y Apellidos del Cliente
+                        <label class="block text-[10px] font-black text-[#122b4f] uppercase tracking-wider mb-1">
+                            NOMBRES Y APELLIDOS DEL CLIENTE
                         </label>
                         <input type="text" id="input-ce-name" placeholder="Nombres completos..."
-                            class="w-full font-bold text-xs px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                            class="w-full font-bold text-xs px-3.5 py-2.5 bg-white border-2 border-[#122b4f] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#122b4f]/20 text-[#122b4f]">
                     </div>
                 </div>
             </div>
 
             <!-- Input Monto Total -->
             <div>
-                <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 text-center">
-                    Monto Total a Cobrar (S/)
+                <label class="block text-xs font-black text-[#122b4f] uppercase tracking-wider mb-1.5 text-center">
+                    MONTO TOTAL A COBRAR (S/)
                 </label>
                 <div class="relative">
-                    <span class="absolute left-4 top-3 text-3xl font-black text-amber-600 font-mono">S/</span>
+                    <span class="absolute left-5 top-3 text-3xl font-black text-amber-700 font-mono">S/</span>
                     <input type="number" step="0.50" id="quick-amount" placeholder="0.00" autofocus
-                        class="w-full text-center text-4xl font-black font-mono py-3 pl-12 pr-4 bg-amber-50/70 border-2 border-amber-400 rounded-2xl focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-200 text-slate-900 transition">
+                        class="w-full text-center text-4xl font-black font-mono py-3.5 pl-14 pr-4 bg-white border-2 border-[#122b4f] rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#122b4f]/15 text-[#122b4f] transition">
                 </div>
             </div>
 
-            <!-- Montos Rápidos -->
-            <div class="grid grid-cols-5 gap-1.5 text-xs font-black">
-                <button type="button" onclick="setAmount(20)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 20</button>
-                <button type="button" onclick="setAmount(23)" class="py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-xl transition">S/ 23</button>
-                <button type="button" onclick="setAmount(35)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 35</button>
-                <button type="button" onclick="setAmount(46)" class="py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-xl transition">S/ 46</button>
-                <button type="button" onclick="setAmount(50)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 50</button>
-                <button type="button" onclick="setAmount(80)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 80</button>
-                <button type="button" onclick="setAmount(100)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 100</button>
-                <button type="button" onclick="setAmount(150)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 150</button>
-                <button type="button" onclick="setAmount(200)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 200</button>
-                <button type="button" onclick="setAmount(250)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 250</button>
+            <!-- Montos Rápidos (Estilo limpio con borde azul según imagen 2) -->
+            <div class="grid grid-cols-5 gap-2 text-xs font-extrabold" id="quick-amounts-grid">
+                <button type="button" onclick="setAmount(20, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 20</button>
+                <button type="button" onclick="setAmount(23, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 23</button>
+                <button type="button" onclick="setAmount(35, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 35</button>
+                <button type="button" onclick="setAmount(46, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 46</button>
+                <button type="button" onclick="setAmount(50, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 50</button>
+                <button type="button" onclick="setAmount(80, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 80</button>
+                <button type="button" onclick="setAmount(100, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 100</button>
+                <button type="button" onclick="setAmount(150, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 150</button>
+                <button type="button" onclick="setAmount(200, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 200</button>
+                <button type="button" onclick="setAmount(250, this)" class="amt-btn py-2.5 bg-white hover:bg-slate-50 border-2 border-[#122b4f] text-[#122b4f] rounded-2xl transition">S/ 250</button>
             </div>
 
             <!-- Método de Pago -->
             <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Método de Pago</label>
-                <div class="grid grid-cols-4 gap-1.5 text-xs font-bold" id="pay-methods">
-                    <button type="button" onclick="setMethod('Efectivo', this)" class="pay-btn active py-2 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-900 text-center transition">Efectivo</button>
-                    <button type="button" onclick="setMethod('Yape', this)" class="pay-btn py-2 rounded-xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 text-center transition">Yape</button>
-                    <button type="button" onclick="setMethod('Plin', this)" class="pay-btn py-2 rounded-xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 text-center transition">Plin</button>
-                    <button type="button" onclick="setMethod('Tarjeta', this)" class="pay-btn py-2 rounded-xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 text-center transition">Tarjeta</button>
+                <label class="block text-xs font-black text-[#122b4f] uppercase tracking-wider mb-1.5">MÉTODO DE PAGO</label>
+                <div class="grid grid-cols-4 gap-2 text-xs font-bold" id="pay-methods">
+                    <button type="button" onclick="setMethod('Efectivo', this)" class="pay-btn active py-2.5 rounded-2xl border-2 border-[#122b4f] bg-[#122b4f] text-white text-center transition">Efectivo</button>
+                    <button type="button" onclick="setMethod('Yape', this)" class="pay-btn py-2.5 rounded-2xl border-2 border-[#122b4f] bg-white text-[#122b4f] hover:bg-slate-50 text-center transition">Yape</button>
+                    <button type="button" onclick="setMethod('Plin', this)" class="pay-btn py-2.5 rounded-2xl border-2 border-[#122b4f] bg-white text-[#122b4f] hover:bg-slate-50 text-center transition">Plin</button>
+                    <button type="button" onclick="setMethod('Tarjeta', this)" class="pay-btn py-2.5 rounded-2xl border-2 border-[#122b4f] bg-white text-[#122b4f] hover:bg-slate-50 text-center transition">Tarjeta</button>
                 </div>
             </div>
 
             <!-- Check Impresión Automática -->
-            <div class="flex items-center justify-between p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-xs font-bold text-amber-950">
+            <div class="flex items-center justify-between p-3.5 bg-white border-2 border-[#122b4f] rounded-2xl text-xs font-bold text-[#122b4f]">
                 <div class="flex items-center space-x-2.5">
-                    <i class="fa-solid fa-print text-amber-600 text-base"></i>
+                    <i class="fa-solid fa-print text-amber-700 text-base"></i>
                     <div>
                         <span>Imprimir Ticket automáticamente</span>
-                        <span class="block text-[10px] text-amber-700 font-normal">EPSON TM-T20III • Impresión directa sin abrir pestañas</span>
+                        <span class="block text-[10px] text-slate-500 font-normal">EPSON TM-T20III • impresión directa sin abrir pestañas</span>
                     </div>
                 </div>
-                <input type="checkbox" id="check-auto-print" checked class="w-5 h-5 text-amber-600 rounded cursor-pointer accent-amber-600">
+                <input type="checkbox" id="check-auto-print" checked class="w-5 h-5 text-[#122b4f] rounded cursor-pointer accent-[#122b4f]">
             </div>
 
             <!-- Botón Emitir -->
             <button type="button" id="btn-emitir" onclick="emitirBoletaPorConsumo()"
-                class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-sm shadow-xl shadow-amber-500/20 transition hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-2">
+                class="w-full py-4 px-6 rounded-2xl bg-[#122b4f] hover:bg-[#1b3d6b] text-white font-black text-sm shadow-xl transition hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-2">
                 <i class="fa-solid fa-bolt text-lg"></i>
                 <span id="btn-text">EMITIR BOLETA AHORA</span>
             </button>
@@ -200,20 +200,43 @@
 
     <script>
         let currentMethod = 'Efectivo';
-        let currentClientType = 'VARIOS'; // VARIOS, DNI, CE
+        let currentClientType = 'DNI'; // Default DNI como en la referencia o VARIOS
 
-        function setAmount(val) {
+        function setAmount(val, btn) {
             document.getElementById('quick-amount').value = parseFloat(val).toFixed(2);
+            document.querySelectorAll('.amt-btn').forEach(b => {
+                b.classList.remove('bg-[#122b4f]', 'text-white');
+                b.classList.add('bg-white', 'text-[#122b4f]');
+            });
+            if (btn) {
+                btn.classList.remove('bg-white', 'text-[#122b4f]');
+                btn.classList.add('bg-[#122b4f]', 'text-white');
+            }
         }
+
+        // Si el usuario escribe a mano en el monto, desmarcar botones activos
+        document.getElementById('quick-amount')?.addEventListener('input', function() {
+            const currentVal = parseFloat(this.value);
+            document.querySelectorAll('.amt-btn').forEach(b => {
+                const bVal = parseFloat(b.innerText.replace('S/', '').trim());
+                if (bVal === currentVal) {
+                    b.classList.remove('bg-white', 'text-[#122b4f]');
+                    b.classList.add('bg-[#122b4f]', 'text-white');
+                } else {
+                    b.classList.remove('bg-[#122b4f]', 'text-white');
+                    b.classList.add('bg-white', 'text-[#122b4f]');
+                }
+            });
+        });
 
         function setMethod(method, btn) {
             currentMethod = method;
             document.querySelectorAll('.pay-btn').forEach(b => {
-                b.classList.remove('active', 'border-amber-500', 'bg-amber-50', 'text-amber-900');
-                b.classList.add('border-slate-200', 'text-slate-600');
+                b.classList.remove('active', 'bg-[#122b4f]', 'text-white');
+                b.classList.add('bg-white', 'text-[#122b4f]');
             });
-            btn.classList.add('active', 'border-amber-500', 'bg-amber-50', 'text-amber-900');
-            btn.classList.remove('border-slate-200', 'text-slate-600');
+            btn.classList.add('active', 'bg-[#122b4f]', 'text-white');
+            btn.classList.remove('bg-white', 'text-[#122b4f]');
         }
 
         function setClientType(type) {
@@ -223,9 +246,9 @@
             ['varios', 'dni', 'ce'].forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 if (t === type.toLowerCase()) {
-                    el.className = "client-tab active py-2 rounded-xl bg-white shadow-xs text-amber-700 transition flex items-center justify-center space-x-1";
+                    el.className = "client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-[#122b4f] text-[#122b4f] bg-white font-black shadow-xs";
                 } else {
-                    el.className = "client-tab py-2 rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center space-x-1";
+                    el.className = "client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-transparent text-slate-500 hover:text-slate-800";
                 }
             });
 
@@ -259,7 +282,7 @@
 
             btn.disabled = true;
             icon.className = "fa-solid fa-spinner fa-spin";
-            statusEl.className = "text-[11px] font-bold text-amber-600 flex items-center space-x-1";
+            statusEl.className = "text-[11px] font-bold text-[#122b4f] flex items-center space-x-1";
             statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Consultando RENIEC...</span>`;
             statusEl.classList.remove('hidden');
 
@@ -395,10 +418,10 @@
                             Total: <strong>S/ ${data.total.toFixed(2)}</strong> • Aceptado en SUNAT / Arca Digital
                         </div>
                         <div class="pt-1 flex space-x-2">
-                            <button onclick="window.open('${data.pdf_ticket_url}', '_blank')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-black transition">
+                            <button onclick="window.open('${data.pdf_ticket_url}', '_blank')" class="flex-1 py-2 bg-[#122b4f] hover:bg-[#1b3d6b] text-white rounded-xl text-[11px] font-black transition">
                                 Ver Ticket PDF
                             </button>
-                            <button onclick="resetForm()" class="px-4 py-2 bg-white border border-emerald-300 text-emerald-800 rounded-xl text-[11px] font-black hover:bg-emerald-100 transition">
+                            <button onclick="resetForm()" class="px-4 py-2 bg-white border border-[#122b4f] text-[#122b4f] rounded-xl text-[11px] font-black hover:bg-slate-100 transition">
                                 Nueva Boleta
                             </button>
                         </div>
@@ -411,6 +434,10 @@
                     }
 
                     amountInput.value = '';
+                    document.querySelectorAll('.amt-btn').forEach(b => {
+                        b.classList.remove('bg-[#122b4f]', 'text-white');
+                        b.classList.add('bg-white', 'text-[#122b4f]');
+                    });
                 } else {
                     statusCard.className = "p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-bold";
                     statusCard.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> ${data.detail || "Error al emitir el comprobante."}`;
@@ -459,12 +486,11 @@
         function resetForm() {
             document.getElementById('quick-amount').value = '';
             document.getElementById('status-card').classList.add('hidden');
-            setClientType('VARIOS');
-            document.getElementById('input-dni').value = '';
-            document.getElementById('input-dni-name').value = '';
-            document.getElementById('input-ce').value = '';
-            document.getElementById('input-ce-name').value = '';
-            document.getElementById('reniec-status').classList.add('hidden');
+            setClientType('DNI');
+            document.querySelectorAll('.amt-btn').forEach(b => {
+                b.classList.remove('bg-[#122b4f]', 'text-white');
+                b.classList.add('bg-white', 'text-[#122b4f]');
+            });
             document.getElementById('quick-amount').focus();
         }
 
