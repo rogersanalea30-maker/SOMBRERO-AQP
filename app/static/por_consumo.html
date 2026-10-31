@@ -210,34 +210,34 @@
         }
 
         async function directPrint(url) {
-            // 1. Intentar impresión 100% directa y silenciosa a la EPSON TM-T20III
+            // 1. Intentar imprimir vía el agente de hardware local (localhost:8000)
             try {
-                const localRes = await fetch('/api/v1/printer/direct-print', {
+                const localRes = await fetch('http://localhost:8000/api/v1/printer/direct-print', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ticket_url: url })
                 });
                 const resData = await localRes.json();
                 if (resData.success) {
-                    console.log("¡Impreso directamente a EPSON TM-T20III sin ventanas!");
+                    console.log("¡Impreso directamente a EPSON TM-T20III sin abrir pestañas!");
                     return;
                 }
-            } catch (err) {}
+            } catch (err) {
+                console.log("Servicio local en localhost:8000 no respondió, usando impresión en misma pestaña.");
+            }
 
-            // 2. Fallback por si la impresora no responde de inmediato
+            // 2. Si no hay agente local, disparar en la MISMA pestaña mediante iframe oculto sin abrir ventana nueva
             const iframe = document.getElementById('print-iframe');
             if (iframe) {
-                iframe.onload = function() {
+                iframe.src = url;
+                setTimeout(() => {
                     try {
                         iframe.contentWindow.focus();
                         iframe.contentWindow.print();
                     } catch (e) {
-                        window.open(url, '_blank');
+                        console.error("Iframe print error:", e);
                     }
-                };
-                iframe.src = url;
-            } else {
-                window.open(url, '_blank');
+                }, 800);
             }
         }
 

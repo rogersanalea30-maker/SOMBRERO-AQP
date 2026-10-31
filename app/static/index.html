@@ -3978,21 +3978,21 @@
             const url = customUrl || (state.lastIssuedInvoice ? state.lastIssuedInvoice.pdf_ticket_url : null);
             if (!url) return;
 
-            // Intentar impresion 100% directa a la impresora Epson TM-T20III
+            // Intentar impresion 100% directa al hardware local
             try {
-                const localRes = await fetch('/api/v1/printer/direct-print', {
+                const localRes = await fetch('http://localhost:8000/api/v1/printer/direct-print', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ticket_url: url })
                 });
                 const resData = await localRes.json();
                 if (resData.success) {
-                    showToast("¡Ticket impreso directamente!", "success");
+                    showToast("¡Ticket enviado a la EPSON TM-T20III!", "success");
                     return;
                 }
             } catch (err) {}
 
-            // Disparo directo a la impresora usando iframe oculto
+            // Fallback en la MISMA pestaña usando iframe
             let iframe = document.getElementById('silent-print-iframe');
             if (!iframe) {
                 iframe = document.createElement('iframe');
@@ -4005,20 +4005,13 @@
                 iframe.style.border = '0';
                 document.body.appendChild(iframe);
             }
-
-            iframe.onload = function() {
+            iframe.src = url;
+            setTimeout(() => {
                 try {
                     iframe.contentWindow.focus();
                     iframe.contentWindow.print();
-                } catch (e) {
-                    const w = window.open(url, '_blank');
-                    if (w) {
-                        w.focus();
-                        w.onload = () => { try { w.print(); } catch(err){} };
-                    }
-                }
-            };
-            iframe.src = url;
+                } catch (e) {}
+            }, 800);
         }
 
         // --------------------------------------------------------------------------
