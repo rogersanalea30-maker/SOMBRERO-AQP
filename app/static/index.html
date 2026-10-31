@@ -3974,9 +3974,23 @@
             document.getElementById('modal-success').classList.add('hidden');
         }
 
-        function printTicket80mm(customUrl) {
+        async function printTicket80mm(customUrl) {
             const url = customUrl || (state.lastIssuedInvoice ? state.lastIssuedInvoice.pdf_ticket_url : null);
             if (!url) return;
+
+            // Intentar impresion 100% directa a la impresora Epson TM-T20III
+            try {
+                const localRes = await fetch('/api/v1/printer/direct-print', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ticket_url: url })
+                });
+                const resData = await localRes.json();
+                if (resData.success) {
+                    showToast("¡Ticket impreso directamente!", "success");
+                    return;
+                }
+            } catch (err) {}
 
             // Disparo directo a la impresora usando iframe oculto
             let iframe = document.getElementById('silent-print-iframe');
@@ -3997,7 +4011,6 @@
                     iframe.contentWindow.focus();
                     iframe.contentWindow.print();
                 } catch (e) {
-                    // Fallback para visores PDF externos
                     const w = window.open(url, '_blank');
                     if (w) {
                         w.focus();

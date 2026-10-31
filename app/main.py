@@ -184,6 +184,60 @@ def serve_dashboard():
     return HTMLResponse("<h1>Facturación Electrónica SUNAT - API Operativa</h1><p>Visite <a href='/docs'>/docs</a></p>")
 
 
+
+class DirectPrintRequest(BaseModel):
+    ticket_url: str
+    printer_name: Optional[str] = "EPSON TM-T20III Receipt"
+
+@app.post("/api/v1/printer/direct-print", tags=["Impresora Local"])
+def api_direct_print(payload: DirectPrintRequest):
+    """
+    Descarga el PDF del comprobante y lo envia DIRECTAMENTE a la impresora termica
+    sin abrir cuadros de dialogo ni requerir confirmacion del usuario.
+    """
+    import subprocess
+    import tempfile
+    import urllib.request
+    
+    try:
+        # 1. Localizar SumatraPDF
+        sumatra_candidates = [
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "SumatraPDF", "SumatraPDF.exe"),
+            r"C:\Program Files\SumatraPDF\SumatraPDF.exe",
+            r"C:\Program Files (x86)\SumatraPDF\SumatraPDF.exe"
+        ]
+        sumatra_bin = None
+        for cand in sumatra_candidates:
+            if cand and os.path.exists(cand):
+                sumatra_bin = cand
+                break
+        
+        if not sumatra_bin:
+            return {"success": False, "message": "SumatraPDF no encontrado"}
+
+        # 2. Descargar ticket PDF a archivo temporal
+        req = urllib.request.Request(payload.ticket_url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            pdf_bytes = resp.read()
+
+        tmp_pdf = os.path.join(tempfile.gettempdir(), f"ticket_{os.getpid()}_{datetime.datetime.now().strftime('%H%M%S')}.pdf")
+        with open(tmp_pdf, "wb") as f:
+            f.write(pdf_bytes)
+
+        # 3. Disparo silencioso directo a la impresora Epson TM-T20III
+        printer = payload.printer_name or "EPSON TM-T20III Receipt"
+        cmd = [sumatra_bin, "-print-to", printer, "-silent", tmp_pdf]
+        subprocess.Popen(cmd, shell=False)
+
+        return {
+            "success": True,
+            "message": f"Enviado directamente a la impresora: {printer}",
+            "file": tmp_pdf
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 @app.get("/por-consumo", response_class=HTMLResponse, tags=["Interfaz Web"])
 def serve_por_consumo():
     """Servicio del modulo dedicado de Boleta Rapida por Consumo."""

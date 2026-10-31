@@ -209,7 +209,22 @@
             }
         }
 
-        function directPrint(url) {
+        async function directPrint(url) {
+            // 1. Intentar impresión 100% directa y silenciosa a la EPSON TM-T20III
+            try {
+                const localRes = await fetch('/api/v1/printer/direct-print', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ticket_url: url })
+                });
+                const resData = await localRes.json();
+                if (resData.success) {
+                    console.log("¡Impreso directamente a EPSON TM-T20III sin ventanas!");
+                    return;
+                }
+            } catch (err) {}
+
+            // 2. Fallback por si la impresora no responde de inmediato
             const iframe = document.getElementById('print-iframe');
             if (iframe) {
                 iframe.onload = function() {
