@@ -55,12 +55,12 @@
                 <!-- Tabs Tipo de Receptor: Clientes Varios / DNI / Carnet Extranjería -->
                 <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-extrabold" id="client-type-tabs">
                     <button type="button" onclick="setClientType('VARIOS')" id="tab-varios"
-                        class="client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-transparent text-slate-500 hover:text-slate-800">
+                        class="client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-[#122b4f] text-[#122b4f] bg-white font-black shadow-xs">
                         <i class="fa-solid fa-users"></i>
                         <span>Varios</span>
                     </button>
                     <button type="button" onclick="setClientType('DNI')" id="tab-dni"
-                        class="client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-[#122b4f] text-[#122b4f] bg-white font-black shadow-xs">
+                        class="client-tab py-2 rounded-xl transition flex items-center justify-center space-x-1 border-2 border-transparent text-slate-500 hover:text-slate-800">
                         <i class="fa-solid fa-id-card"></i>
                         <span>DNI (RENIEC)</span>
                     </button>
@@ -72,7 +72,7 @@
                 </div>
 
                 <!-- Vista 1: Clientes Varios (Default) -->
-                <div id="view-client-varios" class="hidden p-3 bg-slate-50 border-2 border-[#122b4f] rounded-2xl flex items-center justify-between">
+                <div id="view-client-varios" class="p-3 bg-slate-50 border-2 border-[#122b4f] rounded-2xl flex items-center justify-between">
                     <div class="space-y-0.5 truncate pr-2">
                         <span class="font-extrabold text-sm text-[#122b4f] block truncate">99999999 - Clientes - Varios</span>
                         <span class="text-[11px] text-slate-500 block">Emisión sin documento individual • Concepto: <strong>POR CONSUMO</strong></span>
@@ -83,7 +83,7 @@
                 </div>
 
                 <!-- Vista 2: DNI con Búsqueda RENIEC -->
-                <div id="view-client-dni" class="space-y-2 p-3 bg-white border-2 border-[#122b4f] rounded-2xl animate-fade-in">
+                <div id="view-client-dni" class="hidden space-y-2 p-3 bg-white border-2 border-[#122b4f] rounded-2xl animate-fade-in">
                     <div>
                         <label class="block text-[10px] font-black text-[#122b4f] uppercase tracking-wider mb-1">
                             NÚMERO DE DNI (8 DÍGITOS)
@@ -200,7 +200,7 @@
 
     <script>
         let currentMethod = 'Efectivo';
-        let currentClientType = 'DNI'; // Default DNI como en la referencia o VARIOS
+        let currentClientType = 'VARIOS'; // Default 99999999 - Clientes - Varios
 
         function setAmount(val, btn) {
             document.getElementById('quick-amount').value = parseFloat(val).toFixed(2);
@@ -486,7 +486,12 @@
         function resetForm() {
             document.getElementById('quick-amount').value = '';
             document.getElementById('status-card').classList.add('hidden');
-            setClientType('DNI');
+            setClientType('VARIOS');
+            document.getElementById('input-dni').value = '';
+            document.getElementById('input-dni-name').value = '';
+            document.getElementById('input-ce').value = '';
+            document.getElementById('input-ce-name').value = '';
+            document.getElementById('reniec-status').classList.add('hidden');
             document.querySelectorAll('.amt-btn').forEach(b => {
                 b.classList.remove('bg-[#122b4f]', 'text-white');
                 b.classList.add('bg-white', 'text-[#122b4f]');
