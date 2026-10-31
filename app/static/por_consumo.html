@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Boleta Rápida por Consumo - El Sombrero Arequipeño</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
+    </style>
+</head>
+<body class="min-h-full bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6">
+
+    <!-- Card Principal -->
+    <div class="w-full max-w-md bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden animate-fade-in">
+        
+        <!-- Header -->
+        <div class="p-5 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 text-white flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-xl shadow-xs">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-black tracking-tight leading-tight">Boleta por Consumo</h1>
+                    <p class="text-xs text-amber-100 font-medium">El Sombrero Arequipeño • SUNAT</p>
+                </div>
+            </div>
+            <a href="/" class="text-xs font-bold bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-cash-register"></i>
+                <span>POS</span>
+            </a>
+        </div>
+
+        <!-- Body Form -->
+        <div class="p-6 space-y-4">
+
+            <!-- Cliente Receptor Predeterminado -->
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+                <div class="space-y-0.5 truncate pr-2">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cliente Receptor</span>
+                    <span class="font-extrabold text-sm text-slate-800 block truncate">99999999 - Clientes - Varios</span>
+                    <span class="text-[11px] text-slate-500 block">Concepto: <strong>POR CONSUMO (ITM01)</strong></span>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-800 text-[10px] font-black whitespace-nowrap">
+                    B001 (BOLETA)
+                </span>
+            </div>
+
+            <!-- Input Monto Total -->
+            <div>
+                <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5 text-center">
+                    Monto Total a Cobrar (S/)
+                </label>
+                <div class="relative">
+                    <span class="absolute left-4 top-3 text-3xl font-black text-amber-600 font-mono">S/</span>
+                    <input type="number" step="0.50" id="quick-amount" placeholder="0.00" autofocus
+                        class="w-full text-center text-4xl font-black font-mono py-3 pl-12 pr-4 bg-amber-50/70 border-2 border-amber-400 rounded-2xl focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-200 text-slate-900 transition">
+                </div>
+            </div>
+
+            <!-- Montos Rápidos -->
+            <div class="grid grid-cols-4 gap-1.5 text-xs font-black">
+                <button type="button" onclick="setAmount(20)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 20</button>
+                <button type="button" onclick="setAmount(35)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 35</button>
+                <button type="button" onclick="setAmount(50)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 50</button>
+                <button type="button" onclick="setAmount(80)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 80</button>
+                <button type="button" onclick="setAmount(100)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 100</button>
+                <button type="button" onclick="setAmount(150)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 150</button>
+                <button type="button" onclick="setAmount(200)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 200</button>
+                <button type="button" onclick="setAmount(250)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 250</button>
+            </div>
+
+            <!-- Método de Pago -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Método de Pago</label>
+                <div class="grid grid-cols-4 gap-1.5 text-xs font-bold" id="pay-methods">
+                    <button type="button" onclick="setMethod('Efectivo', this)" class="pay-btn active py-2 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-900 text-center transition">Efectivo</button>
+                    <button type="button" onclick="setMethod('Yape', this)" class="pay-btn py-2 rounded-xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 text-center transition">Yape</button>
+                    <button type="button" onclick="setMethod('Plin', this)" class="pay-btn py-2 rounded-xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 text-center transition">Plin</button>
+                    <button type="button" onclick="setMethod('Tarjeta', this)" class="pay-btn py-2 rounded-xl border-2 border-slate-200 text-slate-600 hover:bg-slate-50 text-center transition">Tarjeta</button>
+                </div>
+            </div>
+
+            <!-- Check Impresión Automática -->
+            <div class="flex items-center justify-between p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-xs font-bold text-amber-950">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-print text-amber-600 text-base"></i>
+                    <span>Imprimir Ticket automáticamente</span>
+                </div>
+                <input type="checkbox" id="check-auto-print" checked class="w-5 h-5 text-amber-600 rounded cursor-pointer accent-amber-600">
+            </div>
+
+            <!-- Botón Emitir -->
+            <button type="button" id="btn-emitir" onclick="emitirBoletaPorConsumo()"
+                class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-sm shadow-xl shadow-amber-500/20 transition hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-bolt text-lg"></i>
+                <span id="btn-text">EMITIR BOLETA AHORA</span>
+            </button>
+
+            <!-- Mensaje Estado / Resultado -->
+            <div id="status-card" class="hidden p-4 rounded-2xl text-xs font-bold space-y-1.5 animate-fade-in"></div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="p-4 bg-slate-50 border-t border-slate-200 text-center text-[11px] text-slate-400 font-medium">
+            Facturación Electrónica SUNAT • RUC 20454305613
+        </div>
+
+    </div>
+
+    <!-- Iframe invisible para imprimir directo -->
+    <iframe id="print-iframe" style="position:fixed;right:0;bottom:0;width:0;height:0;border:0;"></iframe>
+
+    <script>
+        let currentMethod = 'Efectivo';
+
+        function setAmount(val) {
+            document.getElementById('quick-amount').value = parseFloat(val).toFixed(2);
+        }
+
+        function setMethod(method, btn) {
+            currentMethod = method;
+            document.querySelectorAll('.pay-btn').forEach(b => {
+                b.classList.remove('active', 'border-amber-500', 'bg-amber-50', 'text-amber-900');
+                b.classList.add('border-slate-200', 'text-slate-600');
+            });
+            btn.classList.add('active', 'border-amber-500', 'bg-amber-50', 'text-amber-900');
+            btn.classList.remove('border-slate-200', 'text-slate-600');
+        }
+
+        async function emitirBoletaPorConsumo() {
+            const amountInput = document.getElementById('quick-amount');
+            const total = parseFloat(amountInput.value || 0);
+
+            if (!total || total <= 0) {
+                alert("Por favor ingrese un monto válido mayor a 0.00");
+                amountInput.focus();
+                return;
+            }
+
+            const btn = document.getElementById('btn-emitir');
+            const btnText = document.getElementById('btn-text');
+            const statusCard = document.getElementById('status-card');
+
+            btn.disabled = true;
+            btnText.innerText = "EMITIENDO EN ARCA DIGITAL...";
+
+            statusCard.className = "p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-2xl text-xs font-bold flex items-center space-x-2";
+            statusCard.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Conectando con SUNAT y Arca Digital...</span>`;
+            statusCard.classList.remove('hidden');
+
+            try {
+                const res = await fetch('/api/v1/pos/quick-consumption', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        total: total,
+                        forma_pago: currentMethod,
+                        sync_arca: true
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    statusCard.className = "p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl text-xs font-bold space-y-2";
+                    statusCard.innerHTML = `
+                        <div class="flex items-center space-x-2 text-emerald-700 text-sm font-black">
+                            <i class="fa-solid fa-circle-check text-base"></i>
+                            <span>¡Boleta ${data.document_id} Emitida con Éxito!</span>
+                        </div>
+                        <div class="text-[11px] text-emerald-800 font-medium">
+                            Total: <strong>S/ ${data.total.toFixed(2)}</strong> • Aceptado en Arca Digital
+                        </div>
+                        <div class="pt-1 flex space-x-2">
+                            <button onclick="window.open('${data.pdf_ticket_url}', '_blank')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-black transition">
+                                Ver Ticket PDF
+                            </button>
+                            <button onclick="resetForm()" class="px-4 py-2 bg-white border border-emerald-300 text-emerald-800 rounded-xl text-[11px] font-black hover:bg-emerald-100 transition">
+                                Nueva Boleta
+                            </button>
+                        </div>
+                    `;
+
+                    // Impresión automática directa
+                    const shouldPrint = document.getElementById('check-auto-print').checked;
+                    if (shouldPrint && data.pdf_ticket_url) {
+                        directPrint(data.pdf_ticket_url);
+                    }
+
+                    amountInput.value = '';
+                } else {
+                    statusCard.className = "p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-bold";
+                    statusCard.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> ${data.detail || "Error al emitir el comprobante."}`;
+                }
+            } catch (err) {
+                statusCard.className = "p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-bold";
+                statusCard.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> Error de conexión con el servidor.`;
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = "EMITIR BOLETA AHORA";
+            }
+        }
+
+        function directPrint(url) {
+            const iframe = document.getElementById('print-iframe');
+            if (iframe) {
+                iframe.onload = function() {
+                    try {
+                        iframe.contentWindow.focus();
+                        iframe.contentWindow.print();
+                    } catch (e) {
+                        window.open(url, '_blank');
+                    }
+                };
+                iframe.src = url;
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('quick-amount').value = '';
+            document.getElementById('status-card').classList.add('hidden');
+            document.getElementById('quick-amount').focus();
+        }
+
+        // Enter key to submit
+        document.getElementById('quick-amount').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                emitirBoletaPorConsumo();
+            }
+        });
+    </script>
+</body>
+</html>

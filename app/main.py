@@ -184,6 +184,15 @@ def serve_dashboard():
     return HTMLResponse("<h1>Facturación Electrónica SUNAT - API Operativa</h1><p>Visite <a href='/docs'>/docs</a></p>")
 
 
+@app.get("/por-consumo", response_class=HTMLResponse, tags=["Interfaz Web"])
+def serve_por_consumo():
+    """Servicio del modulo dedicado de Boleta Rapida por Consumo."""
+    fpath = os.path.join(static_dir, "por_consumo.html")
+    if os.path.exists(fpath):
+        with open(fpath, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse("<h1>Modulo Por Consumo no encontrado</h1>")
+
 @app.get("/carta", response_class=HTMLResponse, tags=["Interfaz Web"])
 @app.get("/carta/{mesa_id}", response_class=HTMLResponse, tags=["Interfaz Web"])
 def serve_digital_menu(mesa_id: Optional[str] = None):

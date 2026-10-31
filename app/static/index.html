@@ -636,7 +636,7 @@
                         <i class="fa-solid fa-cash-register w-6 text-base text-brand-500"></i>
                         <span class="truncate">Punto de Venta (POS)</span>
                     </div>
-                    <span class="bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Fácil</span>
+                    
                 </a>
 
                 <!-- MESAS & SALONES (Comandera) -->
@@ -645,7 +645,7 @@
                         <i class="fa-solid fa-table-cells-large w-6 text-base text-amber-500"></i>
                         <span class="truncate">Mesas & Comandas</span>
                     </div>
-                    <span id="badge-active-tables" class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">17 Mesas</span>
+                    
                 </a>
 
                 <!-- MONITOR DE BAR / BEBIDAS (KDS) -->
@@ -654,7 +654,7 @@
                         <i class="fa-solid fa-beer-mug-empty w-5 text-blue-500"></i>
                         <span class="truncate">Monitor Bar &amp; Bebidas</span>
                     </div>
-                    <span id="badge-kds-bar" class="bg-blue-100 text-blue-800 text-[10px] font-black px-2 py-0.5 rounded-full">0</span>
+                    
                 </a>
 
                 <!-- MONITOR DE COCINA (KDS) -->
@@ -663,7 +663,7 @@
                         <i class="fa-solid fa-fire-burner w-5 text-rose-500"></i>
                         <span class="truncate">Monitor Cocina</span>
                     </div>
-                    <span id="badge-kds-kitchen" class="bg-rose-100 text-rose-800 text-[10px] font-black px-2 py-0.5 rounded-full">0</span>
+                    
                 </a>
 
                 <!-- CARTA VIRTUAL (Nuevo Apartado) -->
@@ -672,7 +672,7 @@
                         <i class="fa-solid fa-book-open w-6 text-base text-emerald-500"></i>
                         <span class="truncate">Carta Virtual</span>
                     </div>
-                    <span class="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Díptico</span>
+                    
                 </a>
 
                 <!-- CÓDIGO QR CARTA & COMPARTIR -->
@@ -681,7 +681,7 @@
                         <i class="fa-solid fa-qrcode w-6 text-base text-purple-500"></i>
                         <span class="truncate">QR Carta de Platos</span>
                     </div>
-                    <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Imprimir</span>
+                    
                 </a>
 
                 <!-- Ventas (Comprobantes) -->
@@ -692,7 +692,7 @@
                             <i class="fa-solid fa-file-invoice text-slate-400 group-hover:text-brand-500 w-5"></i>
                             <span class="truncate">Comprobantes</span>
                         </div>
-                        <span id="badge-doc-count" class="text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">--</span>
+                        
                     </a>
                     <a href="javascript:void(0)" onclick="navigateView('sale-notes')" id="nav-sale-notes" class="sidebar-item sidebar-nav-item flex items-center px-3 py-2 rounded-xl text-slate-600 hover:text-brand-600 hover:bg-brand-50 transition group">
                         <i class="fa-solid fa-receipt text-slate-400 group-hover:text-brand-500 w-5"></i>
@@ -708,14 +708,14 @@
                             <i class="fa-solid fa-utensils text-slate-400 group-hover:text-brand-500 w-5"></i>
                             <span class="truncate">Platos & Productos</span>
                         </div>
-                        <span id="badge-prod-count" class="text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">97</span>
+                        
                     </a>
                     <a href="javascript:void(0)" onclick="navigateView('clients')" id="nav-clients" class="sidebar-item sidebar-nav-item flex items-center justify-between px-3 py-2 rounded-xl text-slate-600 hover:text-brand-600 hover:bg-brand-50 transition group">
                         <div class="flex items-center space-x-2 truncate">
                             <i class="fa-solid fa-users text-slate-400 group-hover:text-brand-500 w-5"></i>
                             <span class="truncate">Clientes</span>
                         </div>
-                        <span id="badge-client-count" class="text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">72</span>
+                        
                     </a>
                 </div>
 
@@ -730,7 +730,7 @@
                             <i class="fa-solid fa-users-gear text-slate-400 group-hover:text-amber-500 w-5"></i>
                             <span class="truncate">Perfiles & Usuarios</span>
                         </div>
-                        <span id="badge-users-count" class="text-[10px] font-black text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">5</span>
+                        
                     </a>
                 </div>
 
@@ -2499,7 +2499,7 @@
             // Search in products or add directly
             const match = state.products.find(p => p.descripcion && p.descripcion.toUpperCase().includes(lunch.dish.toUpperCase()));
             if (match) {
-                addToCart(match.id);
+                addToCart(match);
             } else {
                 const item = {
                     id: `LUNCH-${today}`,
@@ -3386,6 +3386,12 @@
         // POS Cart Management
         // --------------------------------------------------------------------------
         function addToCart(product) {
+            if (typeof product === 'number' || typeof product === 'string') {
+                const found = state.products.find(p => p.id == product);
+                if (found) product = found;
+                else return;
+            }
+            if (!product || !product.descripcion) return;
             const existing = state.cart.find(it => it.codigo === product.codigo && it.descripcion === product.descripcion);
             if (existing) {
                 existing.cantidad += 1;
