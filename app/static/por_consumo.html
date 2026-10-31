@@ -15,10 +15,10 @@
         .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
     </style>
 </head>
-<body class="min-h-full bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6">
+<body class="min-h-full bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 flex flex-col justify-center items-center p-3 sm:p-6">
 
     <!-- Card Principal -->
-    <div class="w-full max-w-md bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden animate-fade-in">
+    <div class="w-full max-w-lg bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden animate-fade-in my-auto">
         
         <!-- Header -->
         <div class="p-5 bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 text-white flex items-center justify-between">
@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <h1 class="text-base font-black tracking-tight leading-tight">Boleta por Consumo</h1>
-                    <p class="text-xs text-amber-100 font-medium">El Sombrero Arequipeño • SUNAT</p>
+                    <p class="text-xs text-amber-100 font-medium">El Sombrero Arequipeño • Facturación SUNAT</p>
                 </div>
             </div>
             <a href="/" class="text-xs font-bold bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl transition flex items-center space-x-1.5">
@@ -40,16 +40,91 @@
         <!-- Body Form -->
         <div class="p-6 space-y-4">
 
-            <!-- Cliente Receptor Predeterminado -->
-            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
-                <div class="space-y-0.5 truncate pr-2">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cliente Receptor</span>
-                    <span class="font-extrabold text-sm text-slate-800 block truncate">99999999 - Clientes - Varios</span>
-                    <span class="text-[11px] text-slate-500 block">Concepto: <strong>POR CONSUMO (ITM01)</strong></span>
+            <!-- Selector de Cliente Receptor -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="text-[11px] font-black text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i class="fa-solid fa-user-tag text-amber-600"></i>
+                        <span>Cliente Receptor (Boleta)</span>
+                    </label>
+                    <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 text-[10px] font-black">
+                        SERIE B001
+                    </span>
                 </div>
-                <span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-800 text-[10px] font-black whitespace-nowrap">
-                    B001 (BOLETA)
-                </span>
+
+                <!-- Tabs Tipo de Receptor: Clientes Varios / DNI / Carnet Extranjería -->
+                <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-2xl text-[11px] font-extrabold" id="client-type-tabs">
+                    <button type="button" onclick="setClientType('VARIOS')" id="tab-varios"
+                        class="client-tab active py-2 rounded-xl bg-white shadow-xs text-amber-700 transition flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Varios</span>
+                    </button>
+                    <button type="button" onclick="setClientType('DNI')" id="tab-dni"
+                        class="client-tab py-2 rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-id-card"></i>
+                        <span>DNI (RENIEC)</span>
+                    </button>
+                    <button type="button" onclick="setClientType('CE')" id="tab-ce"
+                        class="client-tab py-2 rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-passport"></i>
+                        <span>C. Extranjería</span>
+                    </button>
+                </div>
+
+                <!-- Vista 1: Clientes Varios (Default) -->
+                <div id="view-client-varios" class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between">
+                    <div class="space-y-0.5 truncate pr-2">
+                        <span class="font-extrabold text-sm text-slate-800 block truncate">99999999 - Clientes - Varios</span>
+                        <span class="text-[11px] text-slate-500 block">Emisión sin documento individual • Concepto: <strong>POR CONSUMO</strong></span>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-xl bg-slate-200 text-slate-700 text-[10px] font-black whitespace-nowrap">
+                        Doc. 0
+                    </span>
+                </div>
+
+                <!-- Vista 2: DNI con Búsqueda RENIEC -->
+                <div id="view-client-dni" class="hidden space-y-2 p-3 bg-amber-50/50 border border-amber-200/80 rounded-2xl animate-fade-in">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            Número de DNI (8 dígitos)
+                        </label>
+                        <div class="flex space-x-2">
+                            <input type="text" id="input-dni" maxlength="8" placeholder="Ej: 72040673"
+                                class="flex-1 font-mono font-bold text-sm px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                            <button type="button" onclick="buscarReniec()" id="btn-reniec"
+                                class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black transition flex items-center space-x-1.5 shrink-0">
+                                <i class="fa-solid fa-magnifying-glass" id="icon-reniec"></i>
+                                <span>Buscar RENIEC</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            Nombres y Apellidos
+                        </label>
+                        <input type="text" id="input-dni-name" placeholder="Razón social o nombre completo..."
+                            class="w-full font-bold text-xs px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                    </div>
+                    <div id="reniec-status" class="hidden text-[11px] font-bold flex items-center space-x-1"></div>
+                </div>
+
+                <!-- Vista 3: Carnet de Extranjería -->
+                <div id="view-client-ce" class="hidden space-y-2 p-3 bg-amber-50/50 border border-amber-200/80 rounded-2xl animate-fade-in">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            N° Carnet de Extranjería
+                        </label>
+                        <input type="text" id="input-ce" maxlength="12" placeholder="N° Carnet..."
+                            class="w-full font-mono font-bold text-sm px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                            Nombres y Apellidos del Cliente
+                        </label>
+                        <input type="text" id="input-ce-name" placeholder="Nombres completos..."
+                            class="w-full font-bold text-xs px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                    </div>
+                </div>
             </div>
 
             <!-- Input Monto Total -->
@@ -65,9 +140,11 @@
             </div>
 
             <!-- Montos Rápidos -->
-            <div class="grid grid-cols-4 gap-1.5 text-xs font-black">
+            <div class="grid grid-cols-5 gap-1.5 text-xs font-black">
                 <button type="button" onclick="setAmount(20)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 20</button>
+                <button type="button" onclick="setAmount(23)" class="py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-xl transition">S/ 23</button>
                 <button type="button" onclick="setAmount(35)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 35</button>
+                <button type="button" onclick="setAmount(46)" class="py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-xl transition">S/ 46</button>
                 <button type="button" onclick="setAmount(50)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 50</button>
                 <button type="button" onclick="setAmount(80)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 80</button>
                 <button type="button" onclick="setAmount(100)" class="py-2 bg-slate-100 hover:bg-amber-100 hover:text-amber-800 border border-slate-200 rounded-xl text-slate-700 transition">S/ 100</button>
@@ -91,7 +168,10 @@
             <div class="flex items-center justify-between p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-xs font-bold text-amber-950">
                 <div class="flex items-center space-x-2.5">
                     <i class="fa-solid fa-print text-amber-600 text-base"></i>
-                    <span>Imprimir Ticket automáticamente</span>
+                    <div>
+                        <span>Imprimir Ticket automáticamente</span>
+                        <span class="block text-[10px] text-amber-700 font-normal">EPSON TM-T20III • Impresión directa sin abrir pestañas</span>
+                    </div>
                 </div>
                 <input type="checkbox" id="check-auto-print" checked class="w-5 h-5 text-amber-600 rounded cursor-pointer accent-amber-600">
             </div>
@@ -115,11 +195,12 @@
 
     </div>
 
-    <!-- Iframe invisible para imprimir directo -->
+    <!-- Iframe invisible para impresión dentro de la misma pestaña -->
     <iframe id="print-iframe" style="position:fixed;right:0;bottom:0;width:0;height:0;border:0;"></iframe>
 
     <script>
         let currentMethod = 'Efectivo';
+        let currentClientType = 'VARIOS'; // VARIOS, DNI, CE
 
         function setAmount(val) {
             document.getElementById('quick-amount').value = parseFloat(val).toFixed(2);
@@ -135,6 +216,90 @@
             btn.classList.remove('border-slate-200', 'text-slate-600');
         }
 
+        function setClientType(type) {
+            currentClientType = type;
+            
+            // Tabs
+            ['varios', 'dni', 'ce'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if (t === type.toLowerCase()) {
+                    el.className = "client-tab active py-2 rounded-xl bg-white shadow-xs text-amber-700 transition flex items-center justify-center space-x-1";
+                } else {
+                    el.className = "client-tab py-2 rounded-xl text-slate-500 hover:text-slate-800 transition flex items-center justify-center space-x-1";
+                }
+            });
+
+            // Vistas
+            document.getElementById('view-client-varios').classList.toggle('hidden', type !== 'VARIOS');
+            document.getElementById('view-client-dni').classList.toggle('hidden', type !== 'DNI');
+            document.getElementById('view-client-ce').classList.toggle('hidden', type !== 'CE');
+
+            if (type === 'DNI') {
+                document.getElementById('input-dni').focus();
+            } else if (type === 'CE') {
+                document.getElementById('input-ce').focus();
+            }
+        }
+
+        async function buscarReniec() {
+            const dniInput = document.getElementById('input-dni');
+            const dni = dniInput.value.trim();
+            const statusEl = document.getElementById('reniec-status');
+            const nameInput = document.getElementById('input-dni-name');
+            const btn = document.getElementById('btn-reniec');
+            const icon = document.getElementById('icon-reniec');
+
+            if (dni.length !== 8 || !/^\d+$/.test(dni)) {
+                statusEl.className = "text-[11px] font-bold text-rose-600 flex items-center space-x-1";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <span>Ingrese un DNI válido de 8 dígitos numéricos.</span>`;
+                statusEl.classList.remove('hidden');
+                dniInput.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            icon.className = "fa-solid fa-spinner fa-spin";
+            statusEl.className = "text-[11px] font-bold text-amber-600 flex items-center space-x-1";
+            statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Consultando RENIEC...</span>`;
+            statusEl.classList.remove('hidden');
+
+            try {
+                const res = await fetch(`/api/v1/consultas/documento/1/${dni}`);
+                const data = await res.json();
+
+                if (res.ok && data.success && data.razon_social) {
+                    nameInput.value = data.razon_social;
+                    statusEl.className = "text-[11px] font-bold text-emerald-600 flex items-center space-x-1";
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>DNI verificado con RENIEC</span>`;
+                } else {
+                    statusEl.className = "text-[11px] font-bold text-amber-700 flex items-center space-x-1";
+                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>No se obtuvo el nombre automáticamente. Ingréselo manualmente.</span>`;
+                    nameInput.focus();
+                }
+            } catch (err) {
+                statusEl.className = "text-[11px] font-bold text-amber-700 flex items-center space-x-1";
+                statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>Error consultando RENIEC. Puede ingresar el nombre a mano.</span>`;
+            } finally {
+                btn.disabled = false;
+                icon.className = "fa-solid fa-magnifying-glass";
+            }
+        }
+
+        // Auto-consulta RENIEC al escribir 8 dígitos
+        document.getElementById('input-dni')?.addEventListener('input', function(e) {
+            if (this.value.trim().length === 8 && /^\d+$/.test(this.value.trim())) {
+                buscarReniec();
+            }
+        });
+
+        // Enter en input DNI busca
+        document.getElementById('input-dni')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarReniec();
+            }
+        });
+
         async function emitirBoletaPorConsumo() {
             const amountInput = document.getElementById('quick-amount');
             const total = parseFloat(amountInput.value || 0);
@@ -143,6 +308,54 @@
                 alert("Por favor ingrese un monto válido mayor a 0.00");
                 amountInput.focus();
                 return;
+            }
+
+            // Armar cliente según pestaña seleccionada (Solo DNI o CE para Boletas)
+            let clientePayload = {
+                tipo_doc: "0",
+                num_doc: "99999999",
+                razon_social: "Clientes - Varios",
+                direccion: "-"
+            };
+
+            if (currentClientType === 'DNI') {
+                const dni = document.getElementById('input-dni').value.trim();
+                const nombre = document.getElementById('input-dni-name').value.trim();
+                if (dni.length !== 8 || !/^\d+$/.test(dni)) {
+                    alert("Para emitir con DNI ingrese los 8 dígitos correctamente.");
+                    document.getElementById('input-dni').focus();
+                    return;
+                }
+                if (!nombre) {
+                    alert("Por favor complete los nombres y apellidos del cliente.");
+                    document.getElementById('input-dni-name').focus();
+                    return;
+                }
+                clientePayload = {
+                    tipo_doc: "1",
+                    num_doc: dni,
+                    razon_social: nombre,
+                    direccion: "-"
+                };
+            } else if (currentClientType === 'CE') {
+                const ce = document.getElementById('input-ce').value.trim();
+                const nombre = document.getElementById('input-ce-name').value.trim();
+                if (!ce) {
+                    alert("Por favor ingrese el número de Carnet de Extranjería.");
+                    document.getElementById('input-ce').focus();
+                    return;
+                }
+                if (!nombre) {
+                    alert("Por favor ingrese los nombres completos del cliente.");
+                    document.getElementById('input-ce-name').focus();
+                    return;
+                }
+                clientePayload = {
+                    tipo_doc: "4",
+                    num_doc: ce,
+                    razon_social: nombre,
+                    direccion: "-"
+                };
             }
 
             const btn = document.getElementById('btn-emitir');
@@ -163,7 +376,8 @@
                     body: JSON.stringify({
                         total: total,
                         forma_pago: currentMethod,
-                        sync_arca: true
+                        sync_arca: true,
+                        cliente: clientePayload
                     })
                 });
 
@@ -177,7 +391,8 @@
                             <span>¡Boleta ${data.document_id} Emitida con Éxito!</span>
                         </div>
                         <div class="text-[11px] text-emerald-800 font-medium">
-                            Total: <strong>S/ ${data.total.toFixed(2)}</strong> • Aceptado en Arca Digital
+                            Cliente: <strong>${clientePayload.num_doc} - ${clientePayload.razon_social}</strong><br>
+                            Total: <strong>S/ ${data.total.toFixed(2)}</strong> • Aceptado en SUNAT / Arca Digital
                         </div>
                         <div class="pt-1 flex space-x-2">
                             <button onclick="window.open('${data.pdf_ticket_url}', '_blank')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-black transition">
@@ -189,7 +404,7 @@
                         </div>
                     `;
 
-                    // Impresión automática directa
+                    // Impresión automática silenciosa
                     const shouldPrint = document.getElementById('check-auto-print').checked;
                     if (shouldPrint && data.pdf_ticket_url) {
                         directPrint(data.pdf_ticket_url);
@@ -210,7 +425,7 @@
         }
 
         async function directPrint(url) {
-            // 1. Intentar imprimir vía el agente de hardware local (localhost:8000)
+            // 1. Intentar disparar directamente a la EPSON TM-T20III vía el servicio de hardware local
             try {
                 const localRes = await fetch('http://localhost:8000/api/v1/printer/direct-print', {
                     method: 'POST',
@@ -223,10 +438,10 @@
                     return;
                 }
             } catch (err) {
-                console.log("Servicio local en localhost:8000 no respondió, usando impresión en misma pestaña.");
+                console.log("Servicio local en localhost:8000 no respondió, disparando impresión en la misma pestaña.");
             }
 
-            // 2. Si no hay agente local, disparar en la MISMA pestaña mediante iframe oculto sin abrir ventana nueva
+            // 2. Si no hay agente local en localhost:8000, imprimir en la MISMA pestaña mediante iframe oculto
             const iframe = document.getElementById('print-iframe');
             if (iframe) {
                 iframe.src = url;
@@ -244,11 +459,17 @@
         function resetForm() {
             document.getElementById('quick-amount').value = '';
             document.getElementById('status-card').classList.add('hidden');
+            setClientType('VARIOS');
+            document.getElementById('input-dni').value = '';
+            document.getElementById('input-dni-name').value = '';
+            document.getElementById('input-ce').value = '';
+            document.getElementById('input-ce-name').value = '';
+            document.getElementById('reniec-status').classList.add('hidden');
             document.getElementById('quick-amount').focus();
         }
 
         // Enter key to submit
-        document.getElementById('quick-amount').addEventListener('keydown', function(e) {
+        document.getElementById('quick-amount').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 emitirBoletaPorConsumo();
             }

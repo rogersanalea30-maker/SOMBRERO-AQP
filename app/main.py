@@ -9,7 +9,7 @@ from typing import Literal, List, Optional
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, Depends, status, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
@@ -191,11 +191,11 @@ class DirectPrintRequest(BaseModel):
 
 @app.options("/api/v1/printer/direct-print")
 def options_direct_print():
-    from fastapi.responses import Response
     return Response(status_code=200, headers={
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "*"
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Private-Network": "true"
     })
 
 @app.post("/api/v1/printer/direct-print", tags=["Impresora Local"])
@@ -208,6 +208,11 @@ def api_direct_print(payload: DirectPrintRequest):
     import tempfile
     import urllib.request, datetime
     
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Private-Network": "true"
+    }
+
     try:
         # 1. Localizar SumatraPDF
         sumatra_candidates = [
@@ -222,7 +227,7 @@ def api_direct_print(payload: DirectPrintRequest):
                 break
         
         if not sumatra_bin:
-            return {"success": False, "message": "SumatraPDF no encontrado"}
+            return JSONResponse(status_code=200, content={"success": False, "message": "SumatraPDF no encontrado"}, headers=headers)
 
         # 2. Descargar ticket PDF a archivo temporal
         req = urllib.request.Request(payload.ticket_url, headers={"User-Agent": "Mozilla/5.0"})
@@ -238,13 +243,13 @@ def api_direct_print(payload: DirectPrintRequest):
         cmd = [sumatra_bin, "-print-to", printer, "-silent", tmp_pdf]
         subprocess.Popen(cmd, shell=False)
 
-        return {
+        return JSONResponse(status_code=200, content={
             "success": True,
             "message": f"Enviado directamente a la impresora: {printer}",
             "file": tmp_pdf
-        }
+        }, headers=headers)
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return JSONResponse(status_code=200, content={"success": False, "error": str(e)}, headers=headers)
 
 
 @app.get("/por-consumo", response_class=HTMLResponse, tags=["Interfaz Web"])
@@ -740,6 +745,7 @@ class QuickConsumptionRequest(BaseModel):
     total: Decimal
     forma_pago: str = "Efectivo"
     sync_arca: bool = False
+    cliente: Optional[PosClientRequest] = None
 
 class ProductCreateRequest(BaseModel):
     codigo: str
@@ -1118,18 +1124,19 @@ def api_pos_quick_consumption(payload: QuickConsumptionRequest, db: Session = De
     EmisiÃ³n directa de Boleta por Consumo para '99999999 - Clientes - Varios'.
     Solo requiere ingresar el monto total a cobrar.
     """
+    client_data = payload.cliente or PosClientRequest(
+        tipo_doc="0",
+        num_doc="99999999",
+        razon_social="Clientes - Varios",
+        direccion="-"
+    )
     req = PosSaleRequest(
         tipo_documento="03",
         forma_pago="Contado",
         metodo_pago=payload.forma_pago,
         monto_recibido=payload.total,
         sync_arca=payload.sync_arca,
-        cliente=PosClientRequest(
-            tipo_doc="0",
-            num_doc="99999999",
-            razon_social="Clientes - Varios",
-            direccion="-"
-        ),
+        cliente=client_data,
         items=[
             PosItemRequest(
                 codigo="ITM01",

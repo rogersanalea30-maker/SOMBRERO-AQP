@@ -335,8 +335,24 @@ class ArcaDigitalScraper:
                     cust_list = s_res.json().get("customers", [])
                     if cust_list:
                         customer_id = cust_list[0]["id"]
+                    elif customer_name:
+                        new_cust_payload = {
+                            "type": "customers",
+                            "identity_document_type_id": "1" if len(str(customer_doc)) == 8 else "4",
+                            "number": str(customer_doc),
+                            "name": str(customer_name),
+                            "country_id": "PE",
+                            "address": "-"
+                        }
+                        c_create = self.session.post(f"{self.base_url}/persons", json=new_cust_payload, headers={
+                            "X-CSRF-TOKEN": csrf_token,
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Accept": "application/json"
+                        })
+                        if c_create.status_code in [200, 201]:
+                            customer_id = c_create.json().get("id") or customer_id
             except Exception as e:
-                logger.warning(f"No se pudo buscar cliente en Arca: {e}")
+                logger.warning(f"No se pudo buscar o crear cliente en Arca: {e}")
 
         # 4. Formatear Ítems y Calcular Totales (IGV Restaurante 10.5% o Ley 31556)
         # Obtener mapeo rápido del catálogo de Arca para asegurar IDs correctos
