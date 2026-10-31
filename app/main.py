@@ -1,6 +1,6 @@
-"""
-Punto de Entrada Principal de la API y Plataforma de Facturación Electrónica SUNAT
-FastAPI + Base de Datos SQLite/PostgreSQL + Generación de PDFs + UI Dashboard
+﻿"""
+Punto de Entrada Principal de la API y Plataforma de FacturaciÃ³n ElectrÃ³nica SUNAT
+FastAPI + Base de Datos SQLite/PostgreSQL + GeneraciÃ³n de PDFs + UI Dashboard
 """
 
 import os
@@ -32,15 +32,15 @@ from app.services.credit_note_builder import UBL21CreditNoteBuilder
 from app.services.arca_scraper import ArcaDigitalScraper
 
 
-# 1. Crear tablas en la base de datos automáticamente
+# 1. Crear tablas en la base de datos automÃ¡ticamente
 Base.metadata.create_all(bind=engine)
 
 # 2. Inicializar FastAPI
 app = FastAPI(
-    title="InnovaFlow Perú - Facturación Electrónica SUNAT (UBL 2.1) & POS",
+    title="InnovaFlow PerÃº - FacturaciÃ³n ElectrÃ³nica SUNAT (UBL 2.1) & POS",
     description=(
-        "Sistema integral open source para emisión de Facturas (01), Boletas (03) y Notas de Crédito (07) "
-        "con conexión directa a la SUNAT, generación de PDFs con Código QR y panel de control web."
+        "Sistema integral open source para emisiÃ³n de Facturas (01), Boletas (03) y Notas de CrÃ©dito (07) "
+        "con conexiÃ³n directa a la SUNAT, generaciÃ³n de PDFs con CÃ³digo QR y panel de control web."
     ),
     version="2.0.0",
     docs_url="/docs",
@@ -55,13 +55,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. Montar archivos estáticos para la interfaz de usuario
+# 3. Montar archivos estÃ¡ticos para la interfaz de usuario
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
-# 4. Datos iniciales de demostración (Seed)
+# 4. Datos iniciales de demostraciÃ³n (Seed)
 @app.on_event("startup")
 def startup_db_seed():
     db = next(get_db())
@@ -77,7 +77,7 @@ def startup_db_seed():
             )
             p2 = ProductModel(
                 codigo="PROD-002",
-                descripcion="LICENCIA DE FACTURACIÓN ELECTRÓNICA UBL 2.1",
+                descripcion="LICENCIA DE FACTURACIÃ“N ELECTRÃ“NICA UBL 2.1",
                 unidad_medida="NIU",
                 valor_unitario=Decimal("50.00"),
                 precio_unitario=Decimal("59.00"),
@@ -85,7 +85,7 @@ def startup_db_seed():
             )
             p3 = ProductModel(
                 codigo="PROD-003",
-                descripcion="CONSULTORÍA Y SOPORTE MENSUAL",
+                descripcion="CONSULTORÃA Y SOPORTE MENSUAL",
                 unidad_medida="ZZ",
                 valor_unitario=Decimal("200.00"),
                 precio_unitario=Decimal("236.00"),
@@ -112,7 +112,7 @@ def startup_db_seed():
             db.add_all([c1, c2])
             db.commit()
 
-        # Seed Default Users and Roles for El Sombrero Arequipeño
+        # Seed Default Users and Roles for El Sombrero ArequipeÃ±o
         if db.query(UserModel).count() == 0:
             u1 = UserModel(
                 username="admin",
@@ -136,7 +136,7 @@ def startup_db_seed():
             )
             u3 = UserModel(
                 username="mozo1",
-                nombre_completo="Pedro Quispe (Mozo Salón)",
+                nombre_completo="Pedro Quispe (Mozo SalÃ³n)",
                 rol="MOZO",
                 pin="1111",
                 password="mozo",
@@ -146,7 +146,7 @@ def startup_db_seed():
             )
             u4 = UserModel(
                 username="mozo2",
-                nombre_completo="María Condori (Mozo Terraza)",
+                nombre_completo="MarÃ­a Condori (Mozo Terraza)",
                 rol="MOZO",
                 pin="2222",
                 password="mozo",
@@ -156,7 +156,7 @@ def startup_db_seed():
             )
             u5 = UserModel(
                 username="cocina",
-                nombre_completo="Chef René (Cocina & Bar)",
+                nombre_completo="Chef RenÃ© (Cocina & Bar)",
                 rol="COCINA",
                 pin="3333",
                 password="cocina",
@@ -176,12 +176,12 @@ def startup_db_seed():
 
 @app.get("/", response_class=HTMLResponse, tags=["Interfaz Web"])
 def serve_dashboard():
-    """Servicio de la interfaz gráfica interactiva de Punto de Venta y Gestión."""
+    """Servicio de la interfaz grÃ¡fica interactiva de Punto de Venta y GestiÃ³n."""
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
         with open(index_file, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
-    return HTMLResponse("<h1>Facturación Electrónica SUNAT - API Operativa</h1><p>Visite <a href='/docs'>/docs</a></p>")
+    return HTMLResponse("<h1>FacturaciÃ³n ElectrÃ³nica SUNAT - API Operativa</h1><p>Visite <a href='/docs'>/docs</a></p>")
 
 
 
@@ -197,7 +197,7 @@ def api_direct_print(payload: DirectPrintRequest):
     """
     import subprocess
     import tempfile
-    import urllib.request
+    import urllib.request, datetime
     
     try:
         # 1. Localizar SumatraPDF
@@ -312,7 +312,7 @@ def health_check():
 
 
 # ==============================================================================
-# EMISIÓN DE FACTURAS Y BOLETAS
+# EMISIÃ“N DE FACTURAS Y BOLETAS
 # ==============================================================================
 
 @app.post(
@@ -323,12 +323,12 @@ def health_check():
 )
 def emitir_comprobante(invoice_data: InvoiceRequest, db: Session = Depends(get_db)):
     """
-    Emite una Factura (01) o Boleta (03) conectándose directamente con la SUNAT:
+    Emite una Factura (01) o Boleta (03) conectÃ¡ndose directamente con la SUNAT:
     1. Construye el XML UBL 2.1.
     2. Firma digitalmente con el certificado .pfx.
-    3. Empaqueta el ZIP y lo envía mediante sendBill.
+    3. Empaqueta el ZIP y lo envÃ­a mediante sendBill.
     4. Procesa y almacena el CDR de respuesta.
-    5. Genera la Representación Impresa en PDF (A4 y Ticket 80mm).
+    5. Genera la RepresentaciÃ³n Impresa en PDF (A4 y Ticket 80mm).
     6. Persiste la venta y los comprobantes en la base de datos.
     """
     try:
@@ -365,7 +365,7 @@ def emitir_comprobante(invoice_data: InvoiceRequest, db: Session = Depends(get_d
 
         cdr: CdrDetails = sunat_result["cdr"]
 
-        # 4. Generar PDFs (A4 y Ticket 80mm) con Código QR oficial y Hash
+        # 4. Generar PDFs (A4 y Ticket 80mm) con CÃ³digo QR oficial y Hash
         pdf_dict = invoice_data.model_dump(mode="json")
         pdf_dict["hash_cpe"] = hash_cpe
         pdf_a4_path = os.path.join(settings.dir_pdf, f"{base_name}-a4.pdf")
@@ -485,7 +485,7 @@ def ver_pdf_comprobante(
     """Genera o entrega el archivo PDF del comprobante en formato A4 o Ticket 80mm."""
     parts = document_id.split("-")
     if len(parts) != 2:
-        raise HTTPException(status_code=400, detail="Formato inválido. Use SERIE-CORRELATIVO")
+        raise HTTPException(status_code=400, detail="Formato invÃ¡lido. Use SERIE-CORRELATIVO")
     serie, correlativo = parts[0], parts[1].zfill(8)
     base_name = f"{emisor_ruc}-{tipo}-{serie}-{correlativo}"
 
@@ -508,7 +508,7 @@ def descargar_archivo_comprobante(
     """Descarga XML original, firmado, ZIP o CDR."""
     parts = document_id.split("-")
     if len(parts) != 2:
-        raise HTTPException(status_code=400, detail="Formato inválido")
+        raise HTTPException(status_code=400, detail="Formato invÃ¡lido")
     serie, correlativo = parts[0], parts[1].zfill(8)
     base_name = f"{emisor_ruc}-{tipo}-{serie}-{correlativo}"
 
@@ -524,7 +524,7 @@ def descargar_archivo_comprobante(
     file_path = os.path.join(folder, filename)
 
     if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail=f"No se encontró el archivo: {filename}")
+        raise HTTPException(status_code=404, detail=f"No se encontrÃ³ el archivo: {filename}")
 
     return FileResponse(path=file_path, filename=filename, media_type=media_type)
 
@@ -541,12 +541,12 @@ def listar_historial_comprobantes(db: Session = Depends(get_db)):
 
 @app.get("/api/v1/consultas/documento/{tipo}/{numero}", tags=["Consultas"])
 def api_consultar_documento(tipo: str, numero: str):
-    """Consulta pública o validación de RUC (11 dígitos) o DNI (8 dígitos)."""
+    """Consulta pÃºblica o validaciÃ³n de RUC (11 dÃ­gitos) o DNI (8 dÃ­gitos)."""
     return consultar_documento_peru(tipo, numero)
 
 
 # ==============================================================================
-# CATÁLOGO DE CLIENTES Y PRODUCTOS
+# CATÃLOGO DE CLIENTES Y PRODUCTOS
 # ==============================================================================
 
 @app.get("/api/v1/clients", tags=["Clientes"])
@@ -565,7 +565,7 @@ def listar_productos(
         query = query.filter(ProductModel.categoria == categoria)
     if q:
         query = query.filter(ProductModel.descripcion.ilike(f"%{q.strip()}%"))
-    # Orden alfabético por descripción por defecto
+    # Orden alfabÃ©tico por descripciÃ³n por defecto
     return query.order_by(ProductModel.descripcion.asc()).all()
 
 
@@ -632,27 +632,27 @@ def previsualizar_xml_firmado(invoice_data: InvoiceRequest):
 
 
 # ==============================================================================
-# AUTOMATIZACIÓN Y SINCRONIZACIÓN CON ARCA DIGITAL
+# AUTOMATIZACIÃ“N Y SINCRONIZACIÃ“N CON ARCA DIGITAL
 # ==============================================================================
 
 @app.post("/api/v1/arca/sync", tags=["Arca Digital"])
 def api_sincronizar_arca(db: Session = Depends(get_db)):
-    """Ejecuta la sincronización automática de productos y clientes desde Arca Digital."""
+    """Ejecuta la sincronizaciÃ³n automÃ¡tica de productos y clientes desde Arca Digital."""
     scraper = ArcaDigitalScraper()
     if not scraper.login():
-        raise HTTPException(status_code=502, detail="No se pudo iniciar sesión en sombrero.arca.digital")
+        raise HTTPException(status_code=502, detail="No se pudo iniciar sesiÃ³n en sombrero.arca.digital")
 
     result = scraper.sync_to_local_database(db)
     return {
         "success": True,
-        "message": "Sincronización completada exitosamente desde Arca Digital.",
+        "message": "SincronizaciÃ³n completada exitosamente desde Arca Digital.",
         "detalles": result
     }
 
 
 @app.get("/api/v1/arca/company", tags=["Arca Digital"])
 def api_obtener_empresa_arca():
-    """Obtiene la configuración y datos fiscales configurados en Arca Digital."""
+    """Obtiene la configuraciÃ³n y datos fiscales configurados en Arca Digital."""
     scraper = ArcaDigitalScraper()
     company = scraper.get_company_profile()
     if not company:
@@ -723,7 +723,7 @@ class PosSaleRequest(BaseModel):
     forma_pago: str = "Contado"
     metodo_pago: Optional[str] = "Efectivo"
     monto_recibido: Optional[Decimal] = None
-    sync_arca: bool = False  # Por defecto False para evitar emisiones de prueba en producción
+    sync_arca: bool = False  # Por defecto False para evitar emisiones de prueba en producciÃ³n
     cliente: Optional[PosClientRequest] = None
     items: List[PosItemRequest]
 
@@ -755,7 +755,7 @@ def api_get_company_info():
     return {
         "ruc": "20454305613",
         "razon_social": "INVERSIONES TURISTICAS DEL PERU S.A.C.",
-        "nombre_comercial": "EL SOMBRERO - TRADICIONES AREQUIPEÑAS",
+        "nombre_comercial": "EL SOMBRERO - TRADICIONES AREQUIPEÃ‘AS",
         "direccion": "AV. SALAVERRY 480 - LARA",
         "distrito": "Socabaya",
         "provincia": "Arequipa",
@@ -771,7 +771,7 @@ def api_get_company_info():
 
 @app.get("/api/v1/dashboard/stats", tags=["Dashboard"])
 def api_dashboard_stats(db: Session = Depends(get_db)):
-    """Retorna estadísticas para el panel principal de control."""
+    """Retorna estadÃ­sticas para el panel principal de control."""
     total_invoices = db.query(InvoiceModel).count()
     total_clients = db.query(ClientModel).count()
     total_products = db.query(ProductModel).count()
@@ -793,7 +793,7 @@ def api_dashboard_stats(db: Session = Depends(get_db)):
 
 @app.get("/api/v1/pos/next-number/{tipo_documento}", tags=["POS"])
 def api_get_next_number(tipo_documento: str, db: Session = Depends(get_db)):
-    """Calcula la siguiente serie y correlativo para emisión rápida."""
+    """Calcula la siguiente serie y correlativo para emisiÃ³n rÃ¡pida."""
     serie_map = {"01": "F001", "03": "B001", "NV": "NV01"}
     serie = serie_map.get(tipo_documento, "B001")
 
@@ -816,9 +816,9 @@ def api_get_next_number(tipo_documento: str, db: Session = Depends(get_db)):
 @app.post("/api/v1/pos/sale", tags=["POS"])
 def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
     """
-    Emisión ultra-rápida desde el Punto de Venta (POS).
+    EmisiÃ³n ultra-rÃ¡pida desde el Punto de Venta (POS).
     Crea Boletas (03), Facturas (01) o Notas de Venta (NV), genera PDF Ticket 80mm y A4,
-    y conecta automáticamente con SUNAT.
+    y conecta automÃ¡ticamente con SUNAT.
     """
     try:
         from app.schemas.invoice import (
@@ -831,7 +831,7 @@ def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
         serie_map = {"01": "F001", "03": "B001", "NV": "NV01"}
         serie = serie_map.get(tipo_doc, "B001")
 
-        # Obtener y actualizar correlativo de forma atómica
+        # Obtener y actualizar correlativo de forma atÃ³mica
         series_record = db.query(InvoiceSeriesModel).filter(InvoiceSeriesModel.serie == serie).first()
         if not series_record:
             count = db.query(InvoiceModel).filter(InvoiceModel.serie == serie).count()
@@ -846,9 +846,9 @@ def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
         # Cliente
         c_req = payload.cliente or PosClientRequest()
         if tipo_doc == "01" and (c_req.tipo_doc != "6" or len(c_req.num_doc) != 11):
-            raise HTTPException(status_code=400, detail="Para emitir Factura (01) se requiere cliente con RUC válido (11 dígitos).")
+            raise HTTPException(status_code=400, detail="Para emitir Factura (01) se requiere cliente con RUC vÃ¡lido (11 dÃ­gitos).")
 
-        # Ítems
+        # Ãtems
         items_schemas = []
         tot_gravado = Decimal("0.00")
         tot_igv = Decimal("0.00")
@@ -887,7 +887,7 @@ def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
         if tipo_doc == "NV":
             sunat_status = "CONTROL INTERNO"
             sunat_code = "0"
-            sunat_desc = f"Nota de Venta {doc_id} registrada internamente (Sin envío a SUNAT ni impuestos)."
+            sunat_desc = f"Nota de Venta {doc_id} registrada internamente (Sin envÃ­o a SUNAT ni impuestos)."
         else:
             sunat_status = "ACEPTADO"
             sunat_code = "0"
@@ -901,7 +901,7 @@ def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
         cdr_live_url = None
 
         # ----------------------------------------------------------------------
-        # SINCRONIZACIÓN EN VIVO CON ARCA DIGITAL (Validez Real ante SUNAT)
+        # SINCRONIZACIÃ“N EN VIVO CON ARCA DIGITAL (Validez Real ante SUNAT)
         # ----------------------------------------------------------------------
         if payload.sync_arca and tipo_doc in ["01", "03"]:
             try:
@@ -936,9 +936,9 @@ def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
                     xml_live_url = arca_res.get("download_xml_url")
                     cdr_live_url = arca_res.get("download_cdr_url")
                     sunat_status = "ACEPTADO"
-                    sunat_desc = f"Comprobante {doc_id} emitido válidamente y reflejado en Arca Digital (SUNAT Producción)."
+                    sunat_desc = f"Comprobante {doc_id} emitido vÃ¡lidamente y reflejado en Arca Digital (SUNAT ProducciÃ³n)."
             except Exception as arca_err:
-                print(f"[WARN] Error emitiendo en Arca Digital, continuando con emisión local directa: {arca_err}")
+                print(f"[WARN] Error emitiendo en Arca Digital, continuando con emisiÃ³n local directa: {arca_err}")
 
         if not pdf_ticket_live_url and tipo_doc in ["01", "03"]:
             invoice_data = InvoiceRequest(
@@ -988,7 +988,7 @@ def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
             except Exception as sunat_err:
                 print(f"[WARN] Error enviando a SUNAT SOAP: {sunat_err}")
                 sunat_status = "ACEPTADO"
-                sunat_desc = "Comprobante emitido y firmado (Aceptación SUNAT Beta diferida)"
+                sunat_desc = "Comprobante emitido y firmado (AceptaciÃ³n SUNAT Beta diferida)"
 
         # Generar PDFs (A4 y Ticket)
         pdf_dict = {
@@ -1106,7 +1106,7 @@ def api_pos_sale(payload: PosSaleRequest, db: Session = Depends(get_db)):
 @app.post("/api/v1/pos/quick-consumption", tags=["POS"])
 def api_pos_quick_consumption(payload: QuickConsumptionRequest, db: Session = Depends(get_db)):
     """
-    Emisión directa de Boleta por Consumo para '99999999 - Clientes - Varios'.
+    EmisiÃ³n directa de Boleta por Consumo para '99999999 - Clientes - Varios'.
     Solo requiere ingresar el monto total a cobrar.
     """
     req = PosSaleRequest(
@@ -1137,7 +1137,7 @@ def api_pos_quick_consumption(payload: QuickConsumptionRequest, db: Session = De
 
 @app.post("/api/v1/products", tags=["Productos"])
 def api_crear_producto(prod: ProductCreateRequest, db: Session = Depends(get_db)):
-    """Crea un nuevo producto en el catálogo."""
+    """Crea un nuevo producto en el catÃ¡logo."""
     vu = (prod.precio_unitario / Decimal("1.105")).quantize(Decimal("0.0001"))
     new_prod = ProductModel(
         codigo=prod.codigo.strip(),
@@ -1156,7 +1156,7 @@ def api_crear_producto(prod: ProductCreateRequest, db: Session = Depends(get_db)
 
 @app.post("/api/v1/clients", tags=["Clientes"])
 def api_crear_cliente(cli: ClientCreateRequest, db: Session = Depends(get_db)):
-    """Crea un nuevo cliente en el catálogo."""
+    """Crea un nuevo cliente en el catÃ¡logo."""
     exist = db.query(ClientModel).filter(ClientModel.num_doc == cli.num_doc.strip()).first()
     if exist:
         exist.razon_social = cli.razon_social.strip().upper()
@@ -1190,15 +1190,15 @@ if __name__ == "__main__":
 
 
 # ==============================================================================
-# RUTAS DE AUTENTICACIÓN, SESIONES Y PERFILES DE USUARIO
+# RUTAS DE AUTENTICACIÃ“N, SESIONES Y PERFILES DE USUARIO
 # ==============================================================================
 
-@app.post("/api/v1/auth/login", tags=["Autenticación"])
+@app.post("/api/v1/auth/login", tags=["AutenticaciÃ³n"])
 def api_login(req: LoginRequest, db: Session = Depends(get_db)):
     """
-    Inicio de sesión híbrido para restaurantes:
-    1. PIN rápido de 4 dígitos (Ideal para terminales táctiles de mozos y cajeros).
-    2. Usuario y Contraseña tradicional (Para administración).
+    Inicio de sesiÃ³n hÃ­brido para restaurantes:
+    1. PIN rÃ¡pido de 4 dÃ­gitos (Ideal para terminales tÃ¡ctiles de mozos y cajeros).
+    2. Usuario y ContraseÃ±a tradicional (Para administraciÃ³n).
     """
     user = None
     if req.pin:
@@ -1238,9 +1238,9 @@ def api_login(req: LoginRequest, db: Session = Depends(get_db)):
     }
 
 
-@app.get("/api/v1/auth/users-quick", tags=["Autenticación"])
+@app.get("/api/v1/auth/users-quick", tags=["AutenticaciÃ³n"])
 def api_quick_users(db: Session = Depends(get_db)):
-    """Lista rápida de usuarios activos para selección directa en pantalla de bloqueo/login."""
+    """Lista rÃ¡pida de usuarios activos para selecciÃ³n directa en pantalla de bloqueo/login."""
     users = db.query(UserModel).filter(UserModel.activo == True).order_by(UserModel.id.asc()).all()
     return [
         {
@@ -1259,7 +1259,7 @@ def api_quick_users(db: Session = Depends(get_db)):
 
 @app.get("/api/v1/users", tags=["Usuarios"])
 def api_list_users(db: Session = Depends(get_db)):
-    """Gestión de usuarios y perfiles para el panel de administración."""
+    """GestiÃ³n de usuarios y perfiles para el panel de administraciÃ³n."""
     users = db.query(UserModel).order_by(UserModel.id.asc()).all()
     return [
         {
@@ -1286,7 +1286,7 @@ def api_create_user(req: UserCreateRequest, db: Session = Depends(get_db)):
     uname = req.username.strip().lower()
     existing = db.query(UserModel).filter(UserModel.username == uname).first()
     if existing:
-        raise HTTPException(status_code=400, detail="El nombre de usuario ya está registrado.")
+        raise HTTPException(status_code=400, detail="El nombre de usuario ya estÃ¡ registrado.")
 
     new_user = UserModel(
         username=uname,
