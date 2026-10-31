@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     CERT_PASSWORD: str = "123456"
 
     # Rutas de almacenamiento
-    STORAGE_DIR: str = "app/storage"
+    STORAGE_DIR: str = "/tmp/storage" if os.environ.get("VERCEL") else "app/storage"
 
     # Base de Datos SQLite por defecto (o PostgreSQL mediante DATABASE_URL)
     DATABASE_URL: str = "sqlite:///./app/storage/facturacion.db"
